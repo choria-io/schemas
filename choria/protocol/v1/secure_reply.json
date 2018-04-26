@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/protocol/v1/secure_reply.json",
+    "description": "Choria Secure Reply version 1",
+    "title":"SecureReplyV1",
+    "type":"object",
+    "required":[
+        "protocol",
+        "message",
+        "hash"
+    ],
+    "properties": {
+         "protocol": {
+             "type":"string",
+             "enum": [
+                 "choria:secure:reply:1"
+             ]
+         },
+         "message": {
+             "type":"string",
+             "description": "Base64 encoded JSON version of a ReplyV1",
+             "minLength":1
+         },
+         "hash": {
+             "type":"string",
+             "description": "Base 64 encoded SHA256 hash of the Message",
+             "minLength": 1
+         }
+    }
+}
