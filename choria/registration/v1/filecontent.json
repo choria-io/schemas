@@ -16,6 +16,10 @@
                  "choria:registration:filecontent:1"
              ]
          },
+         "updated": {
+             "type":"boolean",
+             "description": "Indicates if the file was updated since last poll based on its mtime"
+         },
          "mtime": {
              "type":"integer",
              "description": "Unix time the file was edited in machine local time"
