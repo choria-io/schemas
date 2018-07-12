@@ -8,7 +8,8 @@
         "protocol",
         "data",
         "sender",
-        "time"
+        "time",
+        "requestid"
     ],
     "properties": {
         "protocol": {
@@ -19,11 +20,15 @@
          },
          "data": {
              "type":"string",
-             "description": "The unmodified content of the message received from NATS"
+             "description": "The unmodified content of the message received from Choria"
          },
          "sender": {
              "type":"string",
-             "description": "The Sender ID who produced the NATS message"
+             "description": "The Sender ID who produced the Choria message"
+         },
+         "requestid": {
+             "type":"string",
+             "description": "The Request ID of the message"
          },
          "time": {
              "type":"integer",
