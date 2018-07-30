@@ -6,7 +6,7 @@
         "shortname": {
             "type": "string",
             "minLength": 1,
-            "pattern": "\\A[a-z0-9_]*\\Z"
+            "pattern": "^[a-z0-9_]*$"
         },
         "base_action_input": {
             "type": "object",
@@ -208,16 +208,19 @@
                         ]
                     },
                     "aggregate": {
-                        "type":"object",
-                        "properties": {
-                            "function": {
-                                "type":"string",
-                                "description": "The name of the aggregation function to use"
-                            },
-                            "args": {
-                                "type":"array",
-                                "items": {
-                                    "type":"string"
+                        "type":"array",
+                        "items": {
+                            "type":"object",
+                            "properties": {
+                                "function": {
+                                    "type":"string",
+                                    "description": "The name of the aggregation function to use"
+                                },
+                                "args": {
+                                    "type":"array",
+                                    "items": {
+                                        "type":"string"
+                                    }
                                 }
                             }
                         }
@@ -233,3 +236,4 @@
         }
     }
 }
+
