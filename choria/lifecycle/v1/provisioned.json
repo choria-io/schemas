@@ -1,0 +1,33 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/lifecycle/v1/provisioned.json",
+    "description": "Event publish when Choria components are done being provisioned",
+    "title": "choria:lifecycle:provisioned:1",
+    "type":"object",
+    "required":[
+        "identity",
+        "component",
+        "timestamp",
+        "protocol"
+    ],
+    "properties": {
+        "protocol": {
+             "type":"string",
+             "enum": [
+                 "choria:lifecycle:provisioned:1"
+             ]
+         },
+         "identity": {
+             "type":"string",
+             "description": "The configured identity of the component starting"
+         },
+         "component": {
+             "type":"string",
+             "description": "The component starting, eg. 'server'"
+         },
+         "timestamp": {
+             "type":"integer",
+             "description": "The time the component started"
+         }
+    }
+}
