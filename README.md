@@ -19,9 +19,9 @@ Data structures of data produced and consumed by the main [Choria Orchestrator](
 |choria/protocol|The networking protocol of the Choria Orchestrator|
 |choria/registration|Data produced by registration plugins|
 
-## MCollective Compatability Framework for Choria Server
+## MCollective Compatibility Framework for Choria Server
 
-A Compatability Framework that allow the Choria Server to execute agents written in Ruby for MCollective
+A Compatibility Framework that allow the Choria Server to execute agents written in Ruby for MCollective
 
 |Schema|Description|
 |------|-----------|
