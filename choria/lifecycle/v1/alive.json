@@ -1,0 +1,38 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/lifecycle/v1/alive.json",
+    "description": "Event publish while Choria components are alive",
+    "title": "choria:lifecycle:alive:1",
+    "type":"object",
+    "required":[
+        "identity",
+        "component",
+        "version",
+        "timestamp",
+        "protocol"
+    ],
+    "properties": {
+        "protocol": {
+             "type":"string",
+             "enum": [
+                 "choria:lifecycle:alive:1"
+             ]
+         },
+         "identity": {
+             "type":"string",
+             "description": "The configured identity of the component starting"
+         },
+         "component": {
+             "type":"string",
+             "description": "The component that is alive, eg. 'server'"
+         },
+         "version": {
+             "type":"string",
+             "description": "The version of the component starting"
+         },
+         "timestamp": {
+             "type":"integer",
+             "description": "The time the component started"
+         }
+    }
+}
