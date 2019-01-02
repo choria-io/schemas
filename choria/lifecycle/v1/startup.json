@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-04/schema",
     "id": "https://choria.io/schemas/choria/lifecycle/v1/startup.json",
     "description": "Event publish when Choria components startup",
-    "title": "choria:lifecycle:startup:1",
+    "title": "io.choria.lifecycle.v1.startup",
     "type":"object",
     "required":[
         "identity",
@@ -15,7 +15,8 @@
         "protocol": {
              "type":"string",
              "enum": [
-                 "choria:lifecycle:startup:1"
+                 "choria:lifecycle:startup:1",
+                 "io.choria.lifecycle.v1.startup"
              ]
          },
          "identity": {

@@ -2,7 +2,7 @@
     "$schema": "http://json-schema.org/draft-04/schema",
     "id": "https://choria.io/schemas/choria/lifecycle/v1/shutdown.json",
     "description": "Event publish when Choria components shutdown",
-    "title": "choria:lifecycle:shutdown:1",
+    "title": "io.choria.lifecycle.v1.shutdown",
     "type":"object",
     "required":[
         "identity",
@@ -14,7 +14,8 @@
         "protocol": {
              "type":"string",
              "enum": [
-                 "choria:lifecycle:shutdown:1"
+                 "choria:lifecycle:shutdown:1",
+                 "io.choria.lifecycle.v1.shutdown"
              ]
          },
          "identity": {

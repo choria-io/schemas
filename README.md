@@ -7,6 +7,7 @@ This repository holds various JSON Schema files that described data required by 
 Various component events are supported, at present only the server support these but more will be added in time
 
 |Schema|Description|
+|------|-----------|
 |choria/lifecycle|Various events that will be published to `choria.lifecycle.event` on the middleware|
 
 ## Choria Server and Broker
