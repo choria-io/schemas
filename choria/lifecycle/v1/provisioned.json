@@ -6,6 +6,7 @@
     "type":"object",
     "required":[
         "identity",
+        "id",
         "component",
         "timestamp",
         "protocol"
@@ -17,6 +18,10 @@
                  "choria:lifecycle:provisioned:1",
                  "io.choria.lifecycle.v1.provisioned"
              ]
+         },
+         "id": {
+            "type":"string",
+            "description": "Unique correlation ID for this event"
          },
          "identity": {
              "type":"string",
