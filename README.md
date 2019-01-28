@@ -28,6 +28,8 @@ Choria defines some standards that web services have to implement to enable cert
 |-------------|-----------|
 |choria/signer|Signing service for remote authorization services in Swagger/OpenAPI format|
 
+Additional related messages are defined there like audit messages published by the signing service.
+
 ## MCollective Compatibility Framework for Choria Server
 
 A Compatibility Framework that allow the Choria Server to execute agents written in Ruby for MCollective

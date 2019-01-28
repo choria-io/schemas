@@ -1,0 +1,39 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/signer/v1/signature_audit.json",
+    "description": "Audit record published by the Choria Central Authentication service when allowing/denying requests",
+    "title": "io.choria.signer.v1.signature_audit",
+    "type": "object",
+    "required": [
+        "protocol",
+        "callerid",
+        "action",
+        "request"
+    ],
+    "properties": {
+        "protocol": {
+            "type":"string",
+            "enum": [
+                "io.choria.signer.v1.signature_audit"
+            ]
+        },
+        "callerid": {
+            "type":"string",
+            "description": "The caller id set by the signer based on information in the JWT token"
+        },
+        "action": {
+            "type": "integer",
+            "enum": [
+                0,
+                1,
+                2
+            ],
+            "description": "The action taken - 0 unknown, 1 allow, 2 deny"
+        },
+        "request": {
+            "type":"string",
+            "description": "The unparsed JSON choria:request:1 request received"
+        }
+    }
+
+}
