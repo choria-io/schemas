@@ -9,6 +9,7 @@
         "callerid",
         "action",
         "site",
+        "time",
         "request"
     ],
     "properties": {
@@ -34,6 +35,10 @@
         "site": {
             "type": "string",
             "description": "The configured site where this audit log originates"
+        },
+        "time": {
+            "type":"integer",
+            "description": "Unix time stamp in UTC when the request were approved"
         },
         "request": {
             "type":"string",
