@@ -8,6 +8,7 @@
         "protocol",
         "callerid",
         "action",
+        "site",
         "request"
     ],
     "properties": {
@@ -22,13 +23,17 @@
             "description": "The caller id set by the signer based on information in the JWT token"
         },
         "action": {
-            "type": "integer",
+            "type": "string",
             "enum": [
-                0,
-                1,
-                2
+                "unknown",
+                "allow",
+                "deny"
             ],
-            "description": "The action taken - 0 unknown, 1 allow, 2 deny"
+            "description": "The action taken"
+        },
+        "site": {
+            "type": "string",
+            "description": "The configured site where this audit log originates"
         },
         "request": {
             "type":"string",
