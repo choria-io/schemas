@@ -38,7 +38,7 @@
         },
         "WatcherBase": {
             "type":"object",
-            "required": ["name", "type", "state_match", "interval"],
+            "required": ["name", "type", "state_match"],
             "additionalItems": false,
             "properties": {
                 "name": {
