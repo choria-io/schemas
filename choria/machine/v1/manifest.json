@@ -1,0 +1,167 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/machine/v1/manifest.json",
+    "description": "Choria Autonomous Agent manifest",
+    "type":"object",
+    "required":["name","version","initial_state","transitions","watchers"],
+    "definitions": {
+        "GoDuration": {
+            "type":"string",
+            "pattern": "^\\d+[hms]$"
+        },
+        "GenericName": {
+            "type":"string",
+            "pattern":"^[a-zA-Z][a-zA-Z0-9_-]+$"
+        },
+        "Transition": {
+            "type":"object",
+            "required": ["name", "from", "destination"],
+            "additionalItems": false,
+            "description": "A valid transition of the Finite State Machine",
+            "properties": {
+                "name": {
+                    "description": "A unique name for the transition event",
+                    "$ref":"#/definitions/GenericName"        
+                },
+                "from": {
+                    "description": "The names of states that this transition is valid from",
+                    "type":"array",
+                    "items": {
+                        "$ref":"#/definitions/GenericName"
+                    }
+                },
+                "destination": {
+                    "description": "The name of the state to transition to when this event fires",
+                    "$ref":"#/definitions/GenericName"
+                }
+            }
+        },
+        "WatcherBase": {
+            "type":"object",
+            "required": ["name", "type", "state_match", "interval"],
+            "additionalItems": false,
+            "properties": {
+                "name": {
+                    "description": "The name of the watcher",
+                    "$ref":"#/definitions/GenericName"
+                },
+                "type": {
+                    "description": "The type of watcher",
+                    "type":"string",
+                    "enum": ["file", "exec"]
+                },
+                "state_match": {
+                    "description": "State names where this watcher will be active",
+                    "type":"array",
+                    "items": {
+                        "$ref":"#/definitions/GenericName"
+                    }
+                },
+                "fail_transition": {
+                    "description": "When this watcher fails the machine will receive this transition event",
+                    "$ref":"#/definitions/GenericName"
+                },
+                "success_transition": {
+                    "description": "When this watcher succeeds the machine will receive this transition event",
+                    "$ref":"#/definitions/GenericName"
+                },
+                "interval": {
+                    "description": "How often this watcher will be run when in any of the valid states",
+                    "$ref":"#/definitions/GoDuration"
+                },
+                "announce_interval": {
+                    "description": "How often the internal state of the watcher will be announced as events",
+                    "$ref":"#/definitions/GoDuration"
+                }
+            }
+        },
+        "WatcherFileProperties": {
+            "type":"object",
+            "description": "File watcher properties",
+            "required": ["path"],
+            "additionalItems": false,
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "The path to a file to watch relative to the machine root"
+                },
+                "gather_initial_state": {
+                    "type":"boolean",
+                    "description": "If the properties of the file should be gathered on initial load"
+                }
+            }
+        },
+        "WatcherFile": {
+            "description": "A watcher that observes the state of a file regularly",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherFileProperties" }
+                    }
+                }
+            ]
+        },
+        "WatcherExecProperties": {
+            "type":"object",
+            "description": "Exec watcher properties",
+            "required": ["command"],
+            "additionalItems": false,
+            "properties": {
+                "command": {
+                    "type": "string",
+                    "description": "The path to a command to run relative to the machine root"
+                }
+            }
+        },
+        "WatcherExec": {
+            "description": "A watcher that executes a command regularly",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherExecProperties" }
+                    }
+                }
+            ]
+        }
+    },
+    "properties": {
+        "name": {
+            "description": "A unique name for this autonomous agent",
+            "$ref":"#/definitions/GenericName"
+        },
+        "version": {
+            "type":"string",
+            "description": "SemVer compatible version of the autonomous agent",
+            "minLength": 5,
+            "pattern": "^\\d+\\.\\d+\\.\\d+$"
+        },
+        "initial_state": { "$ref":"#/definitions/GenericName" },
+        "transitions": {
+            "type":"array",
+            "description": "A list of events that can be fired for this autonomous agent",
+            "minItems": 1,
+            "items": { "$ref":"#/definitions/Transition" }
+        },
+        "watchers": {
+            "description": "Watchers to observe the environment in specific states",
+            "type":"array",
+            "minItems": 1,
+            "items": {
+                "anyOf": [
+                    {"$ref":"#/definitions/WatcherFile"},
+                    {"$ref":"#/definitions/WatcherExec"}
+                ]
+            }
+        }
+    }
+}
