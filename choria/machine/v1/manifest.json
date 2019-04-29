@@ -74,7 +74,6 @@
             "type":"object",
             "description": "File watcher properties",
             "required": ["path"],
-            "additionalItems": false,
             "properties": {
                 "path": {
                     "type": "string",
@@ -114,11 +113,15 @@
             "type":"object",
             "description": "Exec watcher properties",
             "required": ["command"],
-            "additionalItems": false,
             "properties": {
                 "command": {
                     "type": "string",
                     "description": "The path to a command to run relative to the machine root"
+                },
+                "timeout": {
+                    "description": "How long the commands are allowed to run",
+                    "default": "10s",
+                    "$ref":"#/definitions/GoDuration"
                 }
             }
         },
