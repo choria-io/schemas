@@ -1,0 +1,75 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/machine/watcher/exec/v1/state_notification.json",
+    "description": "Event published when a Choria Machine transitions between states",
+    "title": "io.choria.machine.watcher.exec.v1.state",
+    "type":"object",
+    "required":[
+        "protocol",
+        "identity",
+        "id",
+        "version",
+        "timestamp",
+        "machine",
+        "name",
+        "type",
+        "command",
+        "previous_outcome",
+        "previous_run_time"
+    ],
+    "properties": {
+        "protocol": {
+             "type":"string",
+             "enum": [
+                 "io.choria.machine.watcher.exec.v1.state"
+             ]
+         },
+         "id": {
+            "type":"string",
+            "description": "Unique correlation ID for this event"
+         },
+         "identity": {
+             "type":"string",
+             "description": "The configured identity of the component hosting the machine"
+         },
+         "version": {
+             "type":"string",
+             "description": "The version of the machine that received the transition"
+         },
+         "timestamp": {
+             "type":"integer",
+             "description": "The time the state was gathered, UTC timezone, unix format with nano seconds"
+         },
+         "machine": {
+            "type":"string",
+            "description": "The name of the machine that received the transition"
+        },
+         "name": {
+             "type": "string",
+             "description": "The name of the exec watcher"
+         },
+         "type": {
+             "type":"string",
+             "description": "The type of watcher issuing the event",
+             "enum": ["exec"]
+         },
+         "command": {
+             "type":"string",
+             "description": "The command being run"
+         },
+         "previous_outcome": {
+             "type":"string",
+             "description": "The outcome of the previous execution",
+             "enum": [
+                 "unknown",
+                 "skipped",
+                 "error",
+                 "success"
+             ]
+         },
+         "previous_run_time": {
+             "type":"integer",
+             "description": "The time the previous execution took in nano seconds, undefined when not ran before - unknown previous_outcome"
+         }
+    }
+}

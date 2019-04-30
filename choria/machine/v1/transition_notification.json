@@ -1,0 +1,59 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/machine/v1/transition_notification.json",
+    "description": "Event published when a Choria Machine transitions between states",
+    "title": "io.choria.machine.v1.transition",
+    "type":"object",
+    "additionalProperties": false,
+    "required":[
+        "protocol",
+        "identity",
+        "id",
+        "version",
+        "timestamp",
+        "machine",
+        "transition",
+        "from_state",
+        "to_state"
+    ],
+    "properties": {
+        "protocol": {
+             "type":"string",
+             "enum": [
+                 "io.choria.machine.v1.transition"
+             ]
+         },
+         "id": {
+            "type":"string",
+            "description": "Unique correlation ID for this event"
+         },
+         "identity": {
+             "type":"string",
+             "description": "The configured identity of the component hosting the machine"
+         },
+         "version": {
+             "type":"string",
+             "description": "The version of the machine that received the transition"
+         },
+         "timestamp": {
+             "type":"integer",
+             "description": "The time the transition started, UTC timezone, unix format with nano seconds"
+         },
+         "machine": {
+            "type":"string",
+            "description": "The name of the machine that received the transition"
+        },
+         "transition": {
+             "type": "string",
+             "description": "The name of the transition that fired"
+         },
+         "from_state": {
+             "type":"string",
+             "description": "The state name that the machine was in before this transition"
+         },
+         "to_state": {
+             "type":"string",
+             "description": "The state name that the machine is in after the transition"
+         }
+    }
+}
