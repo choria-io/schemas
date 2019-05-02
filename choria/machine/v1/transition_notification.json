@@ -25,7 +25,7 @@
          },
          "id": {
             "type":"string",
-            "description": "Unique correlation ID for this event"
+            "description": "Unique instance ID that produced the message"
          },
          "identity": {
              "type":"string",
