@@ -167,6 +167,11 @@
             "pattern": "^\\d+\\.\\d+\\.\\d+$"
         },
         "initial_state": { "$ref":"#/definitions/GenericName" },
+        "splay_start": {
+            "type":"integer",
+            "description": "Causes a random delay on start no longer than splay_start seconds",
+            "default":0
+        },
         "transitions": {
             "type":"array",
             "description": "A list of events that can be fired for this autonomous agent",
