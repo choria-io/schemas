@@ -7,7 +7,7 @@
     "definitions": {
         "GoDuration": {
             "type":"string",
-            "pattern": "^\\d+[hms]$"
+            "pattern": "^\\d+\\[hms\\]$"
         },
         "GenericName": {
             "type":"string",
