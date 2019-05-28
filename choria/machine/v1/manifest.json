@@ -164,6 +164,48 @@
                     }
                 }
             ]
+        },
+        "WatcherScheduleProperties": {
+            "type":"object",
+            "description": "Schedule watcher properties",
+            "required": ["duration", "schedules"],
+            "properties": {
+                "duration": {
+                    "description": "How long the scheduler should stay in the success state once triggered",
+                    "$ref":"#/definitions/GoDuration"
+                },
+                "schedules": {
+                    "description": "Cron like schedules for when the scheduler trigger success states",
+                    "type":"array",
+                    "items": {
+                        "type":"string"
+                    }
+                }
+            }
+        },
+        "WatcherSchedule": {
+            "description": "A watcher that triggers transitions based on a set of cron like schedules",
+            "type":"object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required":["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherScheduleProperties" }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["schedule"]
+                        }
+                    }
+                }
+            ]
         }
     },
     "properties": {
@@ -196,7 +238,8 @@
             "items": {
                 "anyOf": [
                     {"$ref":"#/definitions/WatcherFile"},
-                    {"$ref":"#/definitions/WatcherExec"}
+                    {"$ref":"#/definitions/WatcherExec"},
+                    {"$ref":"#/definitions/WatcherSchedule"}
                 ]
             }
         }
