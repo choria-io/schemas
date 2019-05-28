@@ -1,0 +1,65 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/choria/machine/watcher/schedule/v1/state_notification.json",
+    "description": "Event published when a Choria Machine transitions between states",
+    "title": "io.choria.machine.watcher.schedule.v1.state",
+    "type":"object",
+    "required":[
+        "protocol",
+        "identity",
+        "id",
+        "version",
+        "timestamp",
+        "machine",
+        "name",
+        "type",
+        "state"
+    ],
+    "properties": {
+        "protocol": {
+             "type":"string",
+             "enum": [
+                 "io.choria.machine.watcher.schedule.v1.state"
+             ]
+         },
+         "id": {
+            "type":"string",
+            "description": "Unique instance ID that produced the message"
+         },
+         "identity": {
+             "type":"string",
+             "description": "The configured identity of the component hosting the machine"
+         },
+         "version": {
+             "type":"string",
+             "description": "The version of the machine that received the transition"
+         },
+         "timestamp": {
+             "type":"integer",
+             "description": "The time the state was gathered, UTC timezone, unix format with nano seconds"
+         },
+         "machine": {
+            "type":"string",
+            "description": "The name of the machine that received the transition"
+        },
+         "name": {
+             "type": "string",
+             "description": "The name of the exec watcher"
+         },
+         "type": {
+             "type":"string",
+             "description": "The type of watcher issuing the event",
+             "enum": ["file"]
+         },
+         "state": {
+             "type":"string",
+             "description": "The current state the scheduler is in",
+             "enum": [
+                 "unknown",
+                 "skipped",
+                 "off",
+                 "on"
+             ]
+         }
+    }
+}
