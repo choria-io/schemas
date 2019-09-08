@@ -23,13 +23,18 @@
                 },
                 "type": {
                     "type": "string",
+                    "description": "The data type the input should be",
                     "enum": [
                         "string",
                         "list",
                         "boolean",
                         "integer",
                         "float",
-                        "number"
+                        "number",
+                        "Hash",
+                        "Array",
+                        "hash",
+                        "array"
                     ]
                 },
                 "optional": {
@@ -115,7 +120,7 @@
                 },
                 "timeout": {
                     "description": "How long this agent is allowed to run",
-                    "type":"integer",
+                    "type": "integer",
                     "minimum": 2
                 }
             },
@@ -166,7 +171,7 @@
                         "properties": {
                             "description": {
                                 "type": "string",
-                                "description": "Short description ofwhat the output means"
+                                "description": "Short description of what the output means"
                             },
                             "default": {
                                 "anyOf": [
@@ -194,8 +199,24 @@
                                 ]
                             },
                             "display_as": {
-                                "type":"string",
+                                "type": "string",
                                 "description": "Short token to identify the data in the output as"
+                            },
+                            "type": {
+                                "type": "string",
+                                "description": "The data type being held in the output",
+                                "enum": [
+                                    "string",
+                                    "list",
+                                    "boolean",
+                                    "integer",
+                                    "float",
+                                    "number",
+                                    "Hash",
+                                    "Array",
+                                    "hash",
+                                    "array"
+                                ]
                             }
                         }
                     },
@@ -208,18 +229,18 @@
                         ]
                     },
                     "aggregate": {
-                        "type":"array",
+                        "type": "array",
                         "items": {
-                            "type":"object",
+                            "type": "object",
                             "properties": {
                                 "function": {
-                                    "type":"string",
+                                    "type": "string",
                                     "description": "The name of the aggregation function to use"
                                 },
                                 "args": {
-                                    "type":"array",
+                                    "type": "array",
                                     "items": {
-                                        "type":"string"
+                                        "type": "string"
                                     }
                                 }
                             }
@@ -236,4 +257,3 @@
         }
     }
 }
-
