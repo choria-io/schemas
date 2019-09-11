@@ -238,10 +238,7 @@
                                     "description": "The name of the aggregation function to use"
                                 },
                                 "args": {
-                                    "type": "array",
-                                    "items": {
-                                        "type": "string"
-                                    }
+                                    "description": "Arguments passed to the function, exact type depends on the function"
                                 }
                             }
                         }
