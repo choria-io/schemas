@@ -122,6 +122,10 @@
                     "description": "How long this agent is allowed to run",
                     "type": "integer",
                     "minimum": 2
+                },
+                "provider": {
+                    "description": "The name of the provider that hosts this agent, example 'external'",
+                    "type": "string"
                 }
             },
             "required": [
