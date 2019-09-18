@@ -155,7 +155,7 @@
                     "input": {
                         "type": "object",
                         "patternProperties": {
-                            "\\A[a-z0-9_]*\\Z": {
+                            "^[a-z0-9_]*$": {
                                 "anyOf": [
                                     {
                                         "$ref": "#/definitions/base_action_input"
