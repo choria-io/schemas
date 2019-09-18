@@ -21,31 +21,35 @@
                     "description": "Short description of the specific input",
                     "minLength": 1
                 },
-                "type": {
-                    "type": "string",
-                    "description": "The data type the input should be",
-                    "enum": [
-                        "string",
-                        "list",
-                        "boolean",
-                        "integer",
-                        "float",
-                        "number",
-                        "Hash",
-                        "Array",
-                        "hash",
-                        "array"
-                    ]
-                },
                 "optional": {
                     "type": "boolean"
                 }
-            }
+            },
+            "required": [
+                "prompt",
+                "description",
+                "optional"
+            ]
         },
         "string_action_input": {
             "allOf": [
                 {
                     "$ref": "#/definitions/base_action_input"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "The data type the input should be",
+                            "enum": [
+                                "string"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ]
                 },
                 {
                     "type": "object",
@@ -56,7 +60,40 @@
                         "maxlength": {
                             "type": "number"
                         }
-                    }
+                    },
+                    "required": [
+                        "validation",
+                        "maxlength"
+                    ]
+                }
+            ]
+        },
+        "other_action_input": {
+            "allOf": [
+                {
+                    "$ref": "#/definitions/base_action_input"
+                },
+                {
+                    "type": "object",
+                    "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "The data type the input should be",
+                            "enum": [
+                                "boolean",
+                                "integer",
+                                "float",
+                                "number",
+                                "Hash",
+                                "Array",
+                                "hash",
+                                "array"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "type"
+                    ]
                 }
             ]
         },
@@ -68,13 +105,24 @@
                 {
                     "type": "object",
                     "properties": {
+                        "type": {
+                            "type": "string",
+                            "description": "The data type the input should be",
+                            "enum": [
+                                "list"
+                            ]
+                        },
                         "list": {
                             "type": "array",
                             "items": {
                                 "type": "string"
                             }
                         }
-                    }
+                    },
+                    "required": [
+                        "type",
+                        "list"
+                    ]
                 }
             ]
         }
@@ -158,13 +206,13 @@
                             "^[a-z0-9_]*$": {
                                 "anyOf": [
                                     {
-                                        "$ref": "#/definitions/base_action_input"
+                                        "$ref": "#/definitions/list_action_input"
+                                    },
+                                    {
+                                        "$ref": "#/definitions/other_action_input"
                                     },
                                     {
                                         "$ref": "#/definitions/string_action_input"
-                                    },
-                                    {
-                                        "$ref": "#/definitions/list_action_input"
                                     }
                                 ]
                             }
