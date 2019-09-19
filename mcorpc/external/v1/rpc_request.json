@@ -15,7 +15,7 @@
         "collective",
         "ttl",
         "msgtime",
-        "body"
+        "data"
     ],
     "properties": {
         "protocol": {
@@ -60,33 +60,9 @@
             "type": "integer",
             "description": "The time the message was created in UTC seconds"
         },
-        "body": {
+        "data": {
             "type": "object",
-            "description": "The RPC request body",
-            "required": [
-                "agent",
-                "action",
-                "caller",
-                "data"
-            ],
-            "properties": {
-                "agent": {
-                    "type": "string",
-                    "description": "The agent name that is being invoked",
-                    "minLength": 1,
-                    "pattern": "^[a-z0-9_]*$"
-                },
-                "action": {
-                    "type": "string",
-                    "description": "The action being invoked",
-                    "minLength": 1,
-                    "pattern": "^[a-z0-9_]*$"
-                },
-                "data": {
-                    "type": "object",
-                    "description": "Free form request data as described by the DDL for the agent"
-                }
-            }
+            "description": "Free form request data as described by the DDL for the agent"
         }
     }
 }
