@@ -1,0 +1,26 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/mcorpc/external/v1/activation_request.json",
+    "description": "Request structure for external agents activation checks",
+    "title": "io.choria.mcorpc.external.v1.activation_request",
+    "type": "object",
+    "required": [
+        "$schema",
+        "protocol",
+        "agent"
+    ],
+    "properties": {
+        "protocol": {
+            "type": "string",
+            "enum": [
+                "io.choria.mcorpc.external.v1.activation_request"
+            ]
+        },
+        "agent": {
+            "type": "string",
+            "description": "The agent name that is being activated",
+            "minLength": 1,
+            "pattern": "^[a-z0-9_]*$"
+        }
+    }
+}
