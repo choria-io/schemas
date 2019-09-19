@@ -1,0 +1,92 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/mcorpc/external/v1/rpc_request.json",
+    "description": "Request structure for external agent RPC requests",
+    "title": "io.choria.mcorpc.external.v1.rpc_request",
+    "type": "object",
+    "required": [
+        "$schema",
+        "protocol",
+        "agent",
+        "action",
+        "requestid",
+        "senderid",
+        "callerid",
+        "collective",
+        "ttl",
+        "msgtime",
+        "body"
+    ],
+    "properties": {
+        "protocol": {
+            "type": "string",
+            "enum": [
+                "io.choria.mcorpc.external.v1.rpc_request"
+            ]
+        },
+        "agent": {
+            "type": "string",
+            "description": "The agent name that is being invoked",
+            "minLength": 1,
+            "pattern": "^[a-z0-9_]*$"
+        },
+        "action": {
+            "type": "string",
+            "description": "The action being invoked",
+            "minLength": 1,
+            "pattern": "^[a-z0-9_]*$"
+        },
+        "requestid": {
+            "type": "string",
+            "description": "A unique identifier for this request"
+        },
+        "senderid": {
+            "type": "string",
+            "description": "The identification of the sending node"
+        },
+        "callerid": {
+            "type": "string",
+            "description": "The AAA verified caller identifier that made the request"
+        },
+        "collective": {
+            "type": "string",
+            "description": "The subcollective that the request is targeted at"
+        },
+        "ttl": {
+            "type": "integer",
+            "description": "Seconds since creation that this message is valid for"
+        },
+        "msgtime": {
+            "type": "integer",
+            "description": "The time the message was created in UTC seconds"
+        },
+        "body": {
+            "type": "object",
+            "description": "The RPC request body",
+            "required": [
+                "agent",
+                "action",
+                "caller",
+                "data"
+            ],
+            "properties": {
+                "agent": {
+                    "type": "string",
+                    "description": "The agent name that is being invoked",
+                    "minLength": 1,
+                    "pattern": "^[a-z0-9_]*$"
+                },
+                "action": {
+                    "type": "string",
+                    "description": "The action being invoked",
+                    "minLength": 1,
+                    "pattern": "^[a-z0-9_]*$"
+                },
+                "data": {
+                    "type": "object",
+                    "description": "Free form request data as described by the DDL for the agent"
+                }
+            }
+        }
+    }
+}

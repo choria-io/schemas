@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema",
+    "id": "https://choria.io/schemas/mcorpc/external/v1/activation_reply.json",
+    "description": "Reply structure for external agents activation checks",
+    "title": "io.choria.mcorpc.external.v1.activation_reply",
+    "type": "object",
+    "required": [
+        "activate"
+    ],
+    "properties": {
+        "activate": {
+            "type": "boolean",
+            "description": "If the agent should be activated"
+        }
+    }
+}
