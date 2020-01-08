@@ -23,6 +23,10 @@
                 },
                 "optional": {
                     "type": "boolean"
+                },
+                "default": {
+                    "type":["number","string","boolean","object","array", "null"],
+                    "description": "The default value the input will have when none is provided by the user",
                 }
             },
             "required": [
