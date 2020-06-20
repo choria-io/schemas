@@ -114,6 +114,46 @@
                 }
             ]
         },
+        "WatcherNagiosProperties": {
+            "type": "object",
+            "description": "Nagios watcher properties",
+            "required": ["plugin"],
+            "properties": {
+                "plugin": {
+                    "type": "string",
+                    "description": "The Nagios plugin to run including it's arguments"
+                },
+                "timeout": {
+                    "description": "How long the commands are allowed to run",
+                    "default": "10s",
+                    "$ref":"#/definitions/GoDuration"
+                }
+            }
+        },
+        "WatcherNagios": {
+            "description": "A watcher that executes Nagios plugins",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherNagiosProperties" }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["nagios"]
+                        }
+                    }
+                }
+            ]
+        },
         "WatcherExecProperties": {
             "type":"object",
             "description": "Exec watcher properties",
@@ -239,6 +279,7 @@
                 "anyOf": [
                     {"$ref":"#/definitions/WatcherFile"},
                     {"$ref":"#/definitions/WatcherExec"},
+                    {"$ref":"#/definitions/WatcherNagios"},
                     {"$ref":"#/definitions/WatcherSchedule"}
                 ]
             }

@@ -1,0 +1,91 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "id": "https://choria.io/schemas/choria/machine/watcher/nagios/v1/state_notification.json",
+  "description": "Event published when a Choria Machine transitions between states",
+  "title": "io.choria.machine.watcher.nagios.v1.state",
+  "type":"object",
+  "required":[
+    "protocol",
+    "identity",
+    "id",
+    "version",
+    "timestamp",
+    "machine",
+    "name",
+    "type",
+    "plugin",
+    "status",
+    "status_code",
+    "output",
+    "check_time",
+    "perfdata",
+    "runtime"
+  ],
+  "properties": {
+    "protocol": {
+      "type":"string",
+      "enum": [
+        "io.choria.machine.watcher.nagios.v1.state"
+      ]
+    },
+    "id": {
+      "type":"string",
+      "description": "Unique instance ID that produced the message"
+    },
+    "identity": {
+      "type":"string",
+      "description": "The configured identity of the component hosting the machine"
+    },
+    "version": {
+      "type":"string",
+      "description": "The version of the machine that received the transition"
+    },
+    "timestamp": {
+      "type":"integer",
+      "description": "The time the state was gathered, UTC timezone, unix format with nano seconds"
+    },
+    "machine": {
+      "type":"string",
+      "description": "The name of the machine that received the transition"
+    },
+    "name": {
+      "type": "string",
+      "description": "The name of the nagios watcher"
+    },
+    "type": {
+      "type":"string",
+      "description": "The type of watcher issuing the event",
+      "enum": ["nagios"]
+    },
+    "plugin": {
+      "type":"string",
+      "description": "The Nagios plugin being run and it's arguments"
+    },
+    "status": {
+      "description": "The current state in human friendly format",
+      "enum": ["OK", "CRITICAL", "WARNING", "UNKNOWN"]
+    },
+    "status_code": {
+      "description": "The current state",
+      "type": "integer",
+      "minimum": 0,
+      "maximum": 3
+    },
+    "output": {
+      "description": "Output produced by the plugin",
+      "type": "string"
+    },
+    "check_time": {
+      "description": "The time the last check was performed in Unix time format",
+      "type": "integer"
+    },
+    "perfdata":  {
+      "description": "The perfdata produced by the plugin if any",
+      "type": "string"
+    },
+    "runtime": {
+      "description": "How long the last check took in seconds",
+      "type": "number"
+    }
+  }
+}
