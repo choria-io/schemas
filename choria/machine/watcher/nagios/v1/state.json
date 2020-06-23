@@ -81,7 +81,10 @@
     },
     "perfdata":  {
       "description": "The perfdata produced by the plugin if any",
-      "type": "string"
+      "type": "array",
+      "items": {
+        "type": "number"
+      }
     },
     "runtime": {
       "description": "How long the last check took in seconds",
