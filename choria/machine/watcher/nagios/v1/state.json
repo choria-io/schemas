@@ -83,7 +83,24 @@
       "description": "The perfdata produced by the plugin if any",
       "type": "array",
       "items": {
-        "type": "number"
+        "type": "object",
+        "required": ["label", "value"],
+        "additionalItems": false,
+        "properties": {
+          "unit": {
+            "type": "string",
+            "enum": ["", "s", "ms", "us", "%", "B", "KB", "MB", "TB", "c"],
+            "description": "Unit value supplied by the plugin"
+          },
+          "label": {
+            "type": "string",
+            "description": "The name of the metric"
+          },
+          "value": {
+            "type": "number",
+            "description": "The parsed numeric value, not interpreted for the unit"
+          }
+        }
       }
     },
     "runtime": {
