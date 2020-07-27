@@ -1,9 +1,35 @@
 {
-  "$schema": "http://json-schema.org/draft-04/schema",
-  "id": "https://choria.io/schemas/choria/machine/watcher/nagios/v1/state_notification.json",
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "https://choria.io/schemas/choria/machine/watcher/nagios/v1/state.json",
   "description": "Event published when a Choria Machine transitions between states",
   "title": "io.choria.machine.watcher.nagios.v1.state",
   "type":"object",
+  "definitions": {
+    "perfdata": {
+      "description": "The perfdata produced by the plugin if any",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["label", "value"],
+        "additionalItems": false,
+        "properties": {
+          "unit": {
+            "type": "string",
+            "enum": ["", "s", "ms", "us", "%", "B", "KB", "MB", "TB", "c"],
+            "description": "Unit value supplied by the plugin"
+          },
+          "label": {
+            "type": "string",
+            "description": "The name of the metric"
+          },
+          "value": {
+            "type": "number",
+            "description": "The parsed numeric value, not interpreted for the unit"
+          }
+        }
+      }
+    }
+  },
   "required":[
     "protocol",
     "identity",
@@ -80,32 +106,35 @@
       "type": "integer"
     },
     "perfdata":  {
-      "description": "The perfdata produced by the plugin if any",
-      "type": "array",
-      "items": {
-        "type": "object",
-        "required": ["label", "value"],
-        "additionalItems": false,
-        "properties": {
-          "unit": {
-            "type": "string",
-            "enum": ["", "s", "ms", "us", "%", "B", "KB", "MB", "TB", "c"],
-            "description": "Unit value supplied by the plugin"
-          },
-          "label": {
-            "type": "string",
-            "description": "The name of the metric"
-          },
-          "value": {
-            "type": "number",
-            "description": "The parsed numeric value, not interpreted for the unit"
-          }
-        }
-      }
+      "$ref": "#/definitions/perfdata"
     },
     "runtime": {
       "description": "How long the last check took in seconds",
       "type": "number"
+    },
+    "history": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "description": "Historical values for the check value",
+        "required": ["execute", "status"],
+        "properties": {
+          "execute": {
+            "type": "string",
+            "format": "date-time",
+            "description": "The time the check was executed"
+          },
+          "status": {
+            "type": "integer",
+            "minimum": 0,
+            "maximum": 4,
+            "description": "The status of this check run in Nagios exit code format"
+          },
+          "perfdata": {
+            "$ref": "#/definitions/perfdata"
+          }
+        }
+      }
     }
   }
 }
