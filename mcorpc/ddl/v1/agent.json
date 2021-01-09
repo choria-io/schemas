@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema",
+    "$schema": "http://json-schema.org/draft-07/schema",
     "id": "https://choria.io/schemas/mcorpc/ddl/v1/agent.json",
     "type": "object",
     "definitions": {
@@ -213,6 +213,7 @@
                     },
                     "input": {
                         "type": "object",
+                        "additionalProperties": false,
                         "patternProperties": {
                             "^[a-z0-9_]*$": {
                                 "anyOf": [
@@ -231,55 +232,60 @@
                     },
                     "output": {
                         "type": "object",
-                        "properties": {
-                            "description": {
-                                "type": "string",
-                                "description": "Short description of what the output means"
-                            },
-                            "default": {
-                                "anyOf": [
-                                    {
-                                        "type": "array"
+                        "patternProperties": {
+                            "^[a-z0-9_]*$": {
+                                "required": ["description", "display_as"],
+                                "properties": {
+                                    "description": {
+                                        "type": "string",
+                                        "description": "Short description of what the output means"
                                     },
-                                    {
-                                        "type": "boolean"
+                                    "default": {
+                                        "anyOf": [
+                                            {
+                                                "type": "array"
+                                            },
+                                            {
+                                                "type": "boolean"
+                                            },
+                                            {
+                                                "type": "integer"
+                                            },
+                                            {
+                                                "type": "null"
+                                            },
+                                            {
+                                                "type": "number"
+                                            },
+                                            {
+                                                "type": "object"
+                                            },
+                                            {
+                                                "type": "string"
+                                            }
+                                        ]
                                     },
-                                    {
-                                        "type": "integer"
+                                    "display_as": {
+                                        "type": "string",
+                                        "description": "Short token to identify the data in the output as"
                                     },
-                                    {
-                                        "type": "null"
-                                    },
-                                    {
-                                        "type": "number"
-                                    },
-                                    {
-                                        "type": "object"
-                                    },
-                                    {
-                                        "type": "string"
+                                    "type": {
+                                        "type": "string",
+                                        "description": "The data type being held in the output",
+                                        "enum": [
+                                            "string",
+                                            "list",
+                                            "boolean",
+                                            "integer",
+                                            "float",
+                                            "number",
+                                            "Hash",
+                                            "Array",
+                                            "hash",
+                                            "array"
+                                        ]
                                     }
-                                ]
-                            },
-                            "display_as": {
-                                "type": "string",
-                                "description": "Short token to identify the data in the output as"
-                            },
-                            "type": {
-                                "type": "string",
-                                "description": "The data type being held in the output",
-                                "enum": [
-                                    "string",
-                                    "list",
-                                    "boolean",
-                                    "integer",
-                                    "float",
-                                    "number",
-                                    "Hash",
-                                    "Array",
-                                    "hash",
-                                    "array"
-                                ]
+                                }
                             }
                         }
                     },
