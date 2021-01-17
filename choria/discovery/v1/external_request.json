@@ -1,0 +1,106 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "https://choria.io/schemas/choria/discovery/v1/external_request.json",
+  "description": "Request structure for external discovery",
+  "title": "io.choria.choria.discovery.v1.external_request",
+  "type":"object",
+  "required":[
+    "protocol",
+    "filter",
+    "collective",
+    "timeout"
+  ],
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "enum": ["io.choria.choria.discovery.v1.external_request"]
+    },
+    "collective": {
+      "type": "string",
+      "description": "The collective to find nodes in",
+      "minLength": 1
+    },
+    "timeout": {
+      "type": "number",
+      "description": "Number of seconds allowed to perform the query",
+      "minimum": 1,
+      "default": 1
+    },
+    "filter":{
+      "type":"object",
+      "required":[
+        "fact",
+        "cf_class",
+        "identity",
+        "compound"
+      ],
+      "properties": {
+        "compound": {
+          "type":"array",
+          "description": "List of compound filters to be applied in an AND fashion",
+          "items": {
+            "type":"string"
+          }
+        },
+        "identity": {
+          "type":"array",
+          "description": "List of identities the message should match, applied in an OR fashion",
+          "items": {
+            "type":"string"
+          }
+        },
+        "agent": {
+          "type":"array",
+          "description": "List of agents the node should have, applied in an AND fashion",
+          "items": {
+            "type":"string"
+          }
+        },
+        "cf_class": {
+          "type":"array",
+          "description": "The list of configuration management classes the node should have, applied in an AND fashion",
+          "items": {
+            "type":"string"
+          }
+        },
+        "fact": {
+          "type":"array",
+          "description": "Fact values the node should have, applied in an AND fashion",
+          "items": {
+            "type":"object",
+            "required": [
+              "fact",
+              "operator",
+              "value"
+            ],
+            "properties": {
+              "fact": {
+                "type":"string",
+                "description": "The fact name to match",
+                "minLength": 1
+              },
+              "operator": {
+                "type":"string",
+                "description": "The comparison to do on it's value",
+                "enum": [
+                  ">=",
+                  "<=",
+                  "<",
+                  ">",
+                  "!=",
+                  "==",
+                  "=~"
+                ]
+              },
+              "value": {
+                "type":"string",
+                "description": "Value to compare the fact value with using the operator",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
