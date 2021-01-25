@@ -1,0 +1,132 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "id": "https://choria.io/schemas/choria/discovery/v1/inventory_file.json",
+  "description": "Structure of the data file for inventory file discovery method",
+  "title": "io.choria.choria.discovery.v1.inventory_file",
+  "type": "object",
+  "required": ["$schema","groups","nodes"],
+  "properties": {
+    "$schema":{
+      "type": "string",
+      "const": "https://choria.io/schemas/choria/discovery/v1/inventory_file.json"
+    },
+    "groups": {
+      "description": "Predefined groups based on discovery queries",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "filter"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Descriptive name for the group",
+            "pattern": "^[a-zA-Z0-9_-]+$",
+            "minLength": 1
+          },
+          "filter": {
+            "type": "object",
+            "description": "Filter to apply to the nodes in the data when resolving this group",
+            "properties": {
+              "agents": {
+                "type": "array",
+                "description": "Names of agents to match",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "classes": {
+                "type": "array",
+                "description": "Names of classes to match",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "facts": {
+                "type": "array",
+                "description": "Facts filters to match",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "identities": {
+                "type": "array",
+                "description": "Identities to match",
+                "items": {
+                  "type": "string",
+                  "minLength": 1
+                }
+              },
+              "compound": {
+                "type": "string",
+                "description": "Compound filter to match",
+                "minLength": 1
+              }
+            }
+          }
+        }
+      }
+    },
+    "nodes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name","collectives","facts","classes","agents"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Unique name for this node",
+            "minLength": 1
+          },
+          "collectives": {
+            "type": "array",
+            "description": "List of collectives this node belongs to",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "facts": {
+            "type": "array",
+            "description": "Facts describing this node",
+            "items": {
+              "type": "object"
+            }
+          },
+          "classes": {
+            "type": "array",
+            "description": "List of classes this node is tagged with",
+            "items": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "agents": {
+            "type": "array",
+            "description": "List of agents hosted by this node",
+            "items": {
+              "type": "object",
+              "required": ["name","version"],
+              "properties": {
+                "name": {
+                  "type": "string",
+                  "minLength": 1,
+                  "description": "The unique name of the agent",
+                  "pattern": "^[a-zA-Z0-9]+$"
+                },
+                "version": {
+                  "type": "string",
+                  "minLength": 5,
+                  "description": "Semver version of the hosted agent",
+                  "pattern": "^\\d+\\.\\d+\\.\\d+$"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
