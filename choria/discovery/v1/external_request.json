@@ -8,7 +8,8 @@
     "protocol",
     "filter",
     "collective",
-    "timeout"
+    "timeout",
+    "options"
   ],
   "properties": {
     "protocol": {
@@ -25,6 +26,13 @@
       "description": "Number of seconds allowed to perform the query",
       "minimum": 1,
       "default": 1
+    },
+    "options": {
+      "type": "object",
+      "description": "Options passed to the discovery method using --do or the API",
+      "items": {
+        "type": "string"
+      }
     },
     "filter":{
       "type":"object",
