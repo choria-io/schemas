@@ -29,7 +29,7 @@
     },
     "options": {
       "type": "object",
-      "description": "Options passed to the discovery method using --do or the API",
+      "description": "Options passed to the discovery method using --do or the API ",
       "items": {
         "type": "string"
       }
