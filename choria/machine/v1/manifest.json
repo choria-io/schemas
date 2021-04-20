@@ -1,5 +1,5 @@
 {
-    "$schema": "http://json-schema.org/draft-04/schema",
+    "$schema": "http://json-schema.org/draft-07/schema",
     "id": "https://choria.io/schemas/choria/machine/v1/manifest.json",
     "description": "Choria Autonomous Agent manifest",
     "type":"object",
@@ -38,6 +38,10 @@
                 "destination": {
                     "description": "The name of the state to transition to when this event fires",
                     "$ref":"#/definitions/GenericName"
+                },
+                "description": {
+                    "description": "A human friendly description of the purpose of this transition",
+                    "type": "string"
                 }
             }
         },
@@ -119,6 +123,19 @@
             "description": "Nagios watcher properties",
             "required": ["plugin"],
             "properties": {
+                "annotations": {
+                    "type": "object",
+                    "description": "Map of strings presented as additional annotations per check",
+                    "propertyNames": {
+                        "pattern": "^[a-zA-Z_-]+$",
+                        "type": "string"
+                    }
+                },
+                "builtin": {
+                    "type": "string",
+                    "description": "Execute an internal plugin",
+                    "enum": ["goss", "heartbeat", "choria_status"]
+                },
                 "plugin": {
                     "type": "string",
                     "description": "The Nagios plugin to run including it's arguments"
@@ -127,6 +144,14 @@
                     "description": "How long the commands are allowed to run",
                     "default": "10s",
                     "$ref":"#/definitions/GoDuration"
+                },
+                "gossfile": {
+                    "description": "For the goss builtin, a check specific YAML file",
+                    "type": "string"
+                },
+                "last_message": {
+                    "description": "For the choria_status builtin how long ago the last RPC message should have been received, specified in go duration string format",
+                    "type": "string"
                 }
             }
         },
@@ -246,6 +271,165 @@
                     }
                 }
             ]
+        },
+        "WatcherTimerProperties": {
+            "type":"object",
+            "description": "Timer watcher properties",
+            "required": ["timer"],
+            "properties": {
+                "timer": {
+                    "description": "How long the timer should run for",
+                    "$ref":"#/definitions/GoDuration"
+                }
+            }
+        },
+        "WatcherTimer": {
+            "description": "A watcher that starts a time when a machine transitions into a state and emits an event when the timer ends",
+            "type":"object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required":["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherTimerProperties" }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["schedule"]
+                        }
+                    }
+                }
+            ]
+        },
+        "WatcherHomeKitProperties": {
+            "type":"object",
+            "description": "Home Kit watcher properties",
+            "required": ["pin"],
+            "properties": {
+                "pin": {
+                    "description": "The pin to enter when setting up the Homekit device",
+                    "type": "string",
+                    "pattern": "^[0-9]+$"
+                },
+                "serial_number": {
+                    "description": "The serial number to report to Home Kit",
+                    "type": "string"
+                },
+                "model": {
+                    "description": "The model to report to Home Kit",
+                    "type": "string",
+                    "default": "Autonomous Agent"
+                },
+                "setup_id": {
+                    "description": "The Home Kit set up id to report",
+                    "type": "string"
+                },
+                "initial": {
+                    "description": "The initial state of the button",
+                    "enum": ["on","off"],
+                    "type": "string"
+                },
+                "on_when": {
+                    "description": "When in any of these states the button will be on",
+                    "type": "array",
+                    "items": {
+                        "$ref":"#/definitions/GenericName"
+                    }
+                },
+                "off_when": {
+                    "description": "When in any of these states the button will be off",
+                    "type": "array",
+                    "items": {
+                        "$ref":"#/definitions/GenericName"
+                    }
+                },
+                "disable_when": {
+                    "description": "When in any of these states the button will be disabled",
+                    "type": "array",
+                    "items": {
+                        "$ref":"#/definitions/GenericName"
+                    }
+                }
+            }
+        },
+        "WatcherHomekit": {
+            "description": "A watcher creates an Apple Home Kit button that can be activated via iOS devices and Siri",
+            "type":"object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required":["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherHomeKitProperties" }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["schedule"]
+                        }
+                    }
+                }
+            ]
+        },
+        "WatcherMetricProperties": {
+            "type":"object",
+            "description": "Metric watcher properties",
+            "required": ["command", "interval"],
+            "properties": {
+                "command": {
+                    "description": "The path to the command to run to retrieve the metric data",
+                    "type": "string"
+                },
+                "interval": {
+                    "description": "Interval to run the command",
+                    "$ref": "#/definitions/GoDuration"
+                },
+                "labels": {
+                    "description": "Labels that would override those from the command",
+                    "type": "object",
+                    "propertyNames": {
+                        "propertyNames": {
+                            "pattern": "^[a-zA-Z_-]+$",
+                            "type": "string"
+                        }
+                    }
+                }
+            }
+        },
+        "WatcherMetric": {
+            "description": "A watcher that periodically runs a command and expose metrics found to Prometheus",
+            "type":"object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required":["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherMetricProperties" }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["schedule"]
+                        }
+                    }
+                }
+            ]
         }
     },
     "properties": {
@@ -280,7 +464,10 @@
                     {"$ref":"#/definitions/WatcherFile"},
                     {"$ref":"#/definitions/WatcherExec"},
                     {"$ref":"#/definitions/WatcherNagios"},
-                    {"$ref":"#/definitions/WatcherSchedule"}
+                    {"$ref":"#/definitions/WatcherSchedule"},
+                    {"$ref":"#/definitions/WatcherHomekit"},
+                    {"$ref":"#/definitions/WatcherTimer"},
+                    {"$ref":"#/definitions/WatcherMetric"}
                 ]
             }
         }
