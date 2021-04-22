@@ -141,6 +141,15 @@
     "properties": {
         "metadata": {
             "type": "object",
+            "required": [
+                "name",
+                "description",
+                "author",
+                "license",
+                "version",
+                "url",
+                "timeout"
+            ],
             "properties": {
                 "name": {
                     "description": "The Agent name",
@@ -185,17 +194,12 @@
                 "provider": {
                     "description": "The name of the provider that hosts this agent, example 'external'",
                     "type": "string"
+                },
+                "service": {
+                    "description": "Indicates that an Agent should be run as a service",
+                    "type": "boolean"
                 }
-            },
-            "required": [
-                "name",
-                "description",
-                "author",
-                "license",
-                "version",
-                "url",
-                "timeout"
-            ]
+            }
         },
         "actions": {
             "type": "array",
