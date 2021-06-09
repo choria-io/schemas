@@ -235,6 +235,10 @@
             "description": "Schedule watcher properties",
             "required": ["duration", "schedules"],
             "properties": {
+                "start_splay": {
+                    "description": "Sleep a random period between 0 and this duration before firing the success_transition. Use this to spread a fleet of schedulers out naturally.",
+                    "$ref":"#/definitions/GoDuration"
+                },
                 "duration": {
                     "description": "How long the scheduler should stay in the success state once triggered",
                     "$ref":"#/definitions/GoDuration"
