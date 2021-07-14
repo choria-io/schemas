@@ -79,6 +79,58 @@
                 }
             }
         },
+        "WatcherKVProperties": {
+            "type": "object",
+            "default": "KV watcher properties",
+            "required": ["bucket"],
+            "properties": {
+                "bucket": {
+                    "description": "The Bucket name that holds the data",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "key": {
+                    "description": "The key to watch for changes",
+                    "type": "string",
+                    "pattern": "\\A[-/_a-zA-Z0-9]+\\z"
+                },
+                "mode": {
+                    "description": "The method used for watching the values, must be poll for bucket watch",
+                    "type": "string",
+                    "default": "poll",
+                    "enum": ["poll","watch"]
+                },
+                "bucket_prefix": {
+                    "description": "When storing data prefix the data keys with the Bucket name",
+                    "type": "boolean",
+                    "default": true
+                }
+            }
+        },
+        "WatcherKV": {
+            "description": "A watcher that observes the state of a Choria Key-Value store Bucket or Key",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["kv"]
+                        }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherKVProperties" }
+                    }
+                }
+            ]
+        },
         "WatcherFileProperties": {
             "type":"object",
             "description": "File watcher properties",
@@ -188,21 +240,36 @@
                     "type": "string",
                     "description": "The path to a command to run relative to the machine root"
                 },
-                "timeout": {
-                    "description": "How long the commands are allowed to run",
-                    "default": "10s",
+                "environment": {
+                    "description": "List of environment variables to pass to the executable in the form VAR=VALUE",
+                    "default": [],
+                    "type":"array",
+                    "items":  { "$ref":"#/definitions/EnvironmentVariable" }
+                },
+                "governor": {
+                    "description": "Limit concurrent executions of the command using a named Choria Governor",
+                    "type": "string"
+                },
+                "governor_timeout": {
+                    "description": "How long to wait for a spot on the Governor prior to giving up and firing fail_transition",
+                    "type": "string",
+                    "default": "5m",
                     "$ref":"#/definitions/GoDuration"
+                },
+                "parse_as_data": {
+                    "description": "Indicates that the command returns JSON data that should be parsed as Machine data and stored",
+                    "type": "boolean",
+                    "default": false
                 },
                 "suppress_success_announce": {
                     "description": "Disable publishing announcements on every successful execution, still does regular timed ones if configured and failed ones",
                     "default": false,
                     "type":"boolean"
                 },
-                "environment": {
-                    "description": "List of environment variables to pass to the executable in the form VAR=VALUE",
-                    "default": [],
-                    "type":"array",
-                    "items":  { "$ref":"#/definitions/EnvironmentVariable" }
+                "timeout": {
+                    "description": "How long the commands are allowed to run",
+                    "default": "10s",
+                    "$ref":"#/definitions/GoDuration"
                 }
             }
         },
@@ -471,7 +538,8 @@
                     {"$ref":"#/definitions/WatcherSchedule"},
                     {"$ref":"#/definitions/WatcherHomekit"},
                     {"$ref":"#/definitions/WatcherTimer"},
-                    {"$ref":"#/definitions/WatcherMetric"}
+                    {"$ref":"#/definitions/WatcherMetric"},
+                    {"$ref":"#/definitions/WatcherKV"}
                 ]
             }
         }
