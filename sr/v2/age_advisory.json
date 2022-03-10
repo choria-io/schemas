@@ -1,0 +1,59 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "id": "https://choria.io/schemas/sr/v2/age_advisory.json",
+  "title": "io.choria.sr.v2.age_advisory",
+  "description": "Choria Stream Replicator sender age advisory",
+  "type":"object",
+  "required": [
+    "protocol",
+    "event_id",
+    "inspect_field",
+    "value",
+    "age",
+    "seen",
+    "replicator",
+    "timestamp",
+    "event"
+  ],
+  "properties": {
+    "protocol": {
+      "type": "string",
+      "enum": ["io.choria.sr.v2.age_advisory"]
+    },
+    "event_id": {
+      "type": "string",
+      "description": "A unique correlation ID per event"
+    },
+    "inspect_field": {
+      "type":"string",
+      "description": "The key being inspected in the data that caused the advisory",
+      "minLength": 1
+    },
+    "value": {
+      "type":"string",
+      "description": "The value found in the sent data that identifies the unique sender",
+      "minLength": 1
+    },
+    "age": {
+      "type":"integer",
+      "description": "The time since this sender last checked in, seconds"
+    },
+    "seen": {
+      "type":"integer",
+      "description": "Unix time in UTC this sender was last seen"
+    },
+    "replicator": {
+      "type":"string",
+      "description": "A unique indicator of the stream replicator where this advisory originated from"
+    },
+    "timestamp": {
+      "type":"integer",
+      "description": "The time this advisory was generated.  Unix timestamp in UTC"
+    },
+    "event": {
+      "type":"string",
+      "description": "The kind of event that cause the advisory.  new - first time a node was seen. timeout - node has not been seen for the configured period.  recover - node came back before expiring.  expire - node was never seen again, expired after max age for the topic",
+      "enum": ["timeout", "recover", "expire","new"]
+    }
+  }
+}
