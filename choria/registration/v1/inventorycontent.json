@@ -12,7 +12,7 @@
   "properties": {
     "protocol": {
       "type":"string",
-      "const": "choria:registration:filecontent:1",
+      "const": "choria:registration:inventorycontent:1",
     },
     "content": {
       "type":"string",
