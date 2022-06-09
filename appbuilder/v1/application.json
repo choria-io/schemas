@@ -32,6 +32,20 @@
         ]
       }
     },
+    "generic_command_cheat": {
+      "type": "object",
+      "required": ["cheat"],
+      "properties": {
+        "label": {
+          "description": "A unique label to give to this cheat, when not given will default to the name of the command it's associated with",
+          "$ref": "#/definitions/shortname"
+        },
+        "cheat": {
+          "type": "string",
+          "description": "The textual body of the cheat"
+        }
+      }
+    },
     "generic_flag": {
       "type": "object",
       "required": [
@@ -138,6 +152,9 @@
         "confirm_prompt": {
           "type": "string",
           "description": "When set always confirms the operation using the value as prompt"
+        },
+        "cheat": {
+          "$ref": "#/definitions/generic_command_cheat"
         }
       }
     },
@@ -573,6 +590,31 @@
       "description": "Sub commands to add below this one",
       "$ref": "#/definitions/commands",
       "minItems": 1
+    },
+    "cheat": {
+      "type": "object",
+      "description": "Cheat sheet definitions, without a top level cheat entry cheats will not be enabled for a command",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enables the cheat integration, only needed if a cheat body is not given at the top level"
+        },
+        "tags": {
+          "type": "array",
+          "description": "List of tags to export to the cheat command when calling --save",
+          "items": {
+            "$ref": "#/definitions/shortname"
+          }
+        },
+        "label": {
+          "description": "A unique label to give to this cheat, when not given will default to the name of the application",
+          "$ref": "#/definitions/shortname"
+        },
+        "cheat": {
+          "type": "string",
+          "description": "The textual body of the top level cheat"
+        }
+      }
     }
   }
 }
