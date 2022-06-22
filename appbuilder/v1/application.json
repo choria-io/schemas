@@ -591,6 +591,12 @@
       "$ref": "#/definitions/commands",
       "minItems": 1
     },
+    "help_template": {
+      "type": "string",
+      "enum": ["","default","compact","long"],
+      "default": "default",
+      "description": "Selects a help template to use for the app"
+    },
     "cheat": {
       "type": "object",
       "description": "Cheat sheet definitions, without a top level cheat entry cheats will not be enabled for a command",
