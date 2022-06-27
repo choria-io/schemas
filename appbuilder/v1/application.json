@@ -77,8 +77,16 @@
           }
         },
         "default": {
-          "type": "string",
+          "oneOf": [
+            {"type": "string"},
+            {"type": "boolean"}
+          ],
           "description": "A default value to assign to the argument"
+        },
+        "bool": {
+          "type": "boolean",
+          "description": "Indicates this flag is a boolean flag that does not accept an argument",
+          "default": false
         }
       }
     },
