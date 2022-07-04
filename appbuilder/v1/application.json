@@ -73,7 +73,7 @@
           "type": "array",
           "description": "A list of valid values this flag will accept",
           "items": {
-            "$ref": "#/definitions/shortname"
+            "type": "string"
           }
         },
         "default": {
@@ -90,13 +90,93 @@
         }
       }
     },
-    "generic_transform": {
+    "jq_transform": {
       "type": "object",
+      "description": "Transforms JSON data using GOJQ",
       "required": ["query"],
       "properties": {
         "query": {
+          "type": "string"
+        }
+      }
+    },
+    "bar_graph_transform": {
+      "type": "object",
+      "description": "Draws a Bar Graph based on JSON input",
+      "properties": {
+        "width": {
+          "type": "integer",
+          "description": "The width of the bar component of the graph",
+          "default": 40
+        },
+        "caption": {
           "type": "string",
-          "description": "The GOJQ query to parse results through"
+          "description": "The caption to show along with the graph"
+        },
+        "bytes": {
+          "type": "boolean",
+          "description": "When true renders the numbers as Bytes",
+          "default": false
+        }
+      }
+    },
+    "line_graph_transform": {
+      "type": "object",
+      "description": "Draws a line graph based on JSON or text input",
+      "properties": {
+        "width": {
+          "type": "integer",
+          "description": "The width of the graph",
+          "default": 40
+        },
+        "height": {
+          "type": "integer",
+          "description": "The height of the graph",
+          "default": 20
+        },
+        "caption": {
+          "type": "string",
+          "description": "The caption to show along with the graph"
+        },
+        "precision": {
+          "type": "integer",
+          "minimum": 0,
+          "default": 0,
+          "description": "The floating point precision to show in the graph legend"
+        },
+        "json": {
+          "type": "boolean",
+          "description": "When true expect input in JSON format",
+          "default": false
+        }
+      }
+    },
+    "transform": {
+      "type": "object",
+      "properties": {
+        "query": {
+          "type": "string",
+          "description": "Simplified version of the JQ transform"
+        },
+        "jq": {
+          "$ref": "#/definitions/jq_transform"
+        },
+        "bar_graph": {
+          "$ref": "#/definitions/bar_graph_transform"
+        },
+        "line_graph": {
+          "$ref": "#/definitions/line_graph_transform"
+        },
+        "pipeline": {
+          "type": "array",
+          "description": "List of transforms to apply in order",
+          "items": {
+            "anyOf": [
+              {"$ref": "#/definitions/jq_transform"},
+              {"$ref": "#/definitions/bar_graph_transform"},
+              {"$ref": "#/definitions/line_graph_transform"}
+            ]
+          }
         }
       }
     },
@@ -123,7 +203,7 @@
           "type": "array",
           "description": "A list of valid values this flag will accept",
           "items": {
-            "$ref": "#/definitions/shortname"
+            "type": "string"
           }
         },
         "default": {
@@ -341,7 +421,7 @@
               "$ref": "#/definitions/commands"
             },
             "transform": {
-              "$ref": "#/definitions/generic_transform"
+              "$ref": "#/definitions/transform"
             },
             "request": {
               "type": "object",
@@ -508,7 +588,7 @@
               "type": "object",
               "description": "When the command returns JSON output, transform it using a GOJQ query",
               "allOf": [
-                {"$ref": "#/definitions/generic_transform"}
+                {"$ref": "#/definitions/transform"}
               ]
             }
           }
@@ -543,7 +623,7 @@
               "type": "object",
               "description": "When the command returns JSON output, transform it using a GOJQ query",
               "allOf": [
-                {"$ref": "#/definitions/generic_transform"}
+                {"$ref": "#/definitions/transform"}
               ]
             },
             "flags": {
@@ -601,7 +681,7 @@
     },
     "help_template": {
       "type": "string",
-      "enum": ["","default","compact","long"],
+      "enum": ["","default", "compact", "columns", "long"],
       "default": "default",
       "description": "Selects a help template to use for the app"
     },
