@@ -120,6 +120,73 @@
         }
       }
     },
+    "write_file_transform": {
+      "type": "object",
+      "required": ["file"],
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Path to the file to write"
+        },
+        "message": {
+          "type": "string",
+          "description": "The message to produce as output rather than the contents of the file"
+        },
+        "replace": {
+          "type": "boolean",
+          "default": false,
+          "description": "Replace existing files"
+        }
+      }
+    },
+    "template_transform": {
+      "type": "object",
+      "description": "Produce text data using Go templates",
+      "properties": {
+        "contents": {
+          "type": "string",
+          "description": "The body of the template to parse"
+        },
+        "source": {
+          "type": "string",
+          "description": "Loads the template from a file in this path"
+        }
+      }
+    },
+    "report_transform": {
+      "type": "object",
+      "description": "Produce a textual report from row orientated data",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "A name for the report, supports template variables"
+        },
+        "body": {
+          "type": "string",
+          "description": "The report body definition"
+        },
+        "header": {
+          "type": "string",
+          "description": "The report header definition"
+        },
+        "footer": {
+          "type": "string",
+          "description": "The report footer definition"
+        },
+        "rows_per_page": {
+          "type": "integer",
+          "description": "How many rows to render per page"
+        },
+        "initial_query": {
+          "type": "string",
+          "description": "Allows row orientated data to be located using a GJSON query over object data"
+        },
+        "source_file": {
+          "type": "string",
+          "description": "Load the report definition from a file"
+        }
+      }
+    },
     "line_graph_transform": {
       "type": "object",
       "description": "Draws a line graph based on JSON or text input",
@@ -167,6 +234,16 @@
         "line_graph": {
           "$ref": "#/definitions/line_graph_transform"
         },
+        "report": {
+          "$ref": "#/definitions/report_transform"
+        },
+        "template": {
+          "$ref": "#/definitions/template_transform"
+        },
+        "write_file": {
+          "$ref": "#/definitions/write_file_transform"
+        },
+
         "pipeline": {
           "type": "array",
           "description": "List of transforms to apply in order",
@@ -174,7 +251,10 @@
             "anyOf": [
               {"$ref": "#/definitions/jq_transform"},
               {"$ref": "#/definitions/bar_graph_transform"},
-              {"$ref": "#/definitions/line_graph_transform"}
+              {"$ref": "#/definitions/line_graph_transform"},
+              {"$ref": "#/definitions/report_transform"},
+              {"$ref": "#/definitions/template_transform"},
+              {"$ref": "#/definitions/write_file_transform"}
             ]
           }
         }
