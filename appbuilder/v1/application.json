@@ -725,6 +725,33 @@
               "description": "Sub commands to add below this one",
               "$ref": "#/definitions/commands",
               "minItems": 1
+            },
+            "backoff": {
+              "type": "object",
+              "required": ["max_attempts"],
+              "description": "Configures retries of failing executions",
+              "properties": {
+                "max_attempts": {
+                  "type": "number",
+                  "description": "The maximum amount of times to retry the command",
+                  "minimum": 2
+                },
+                "max_sleep": {
+                  "type": "string",
+                  "description": "The maximum time to sleep between tries as a time format like 500ms, 1s or 1m",
+                  "default": "20s"
+                },
+                "min_sleep": {
+                  "type": "string",
+                  "description": "The minimum time to sleep between tries as a time format like 1s or 1m",
+                  "default": "500ms"
+                },
+                "steps": {
+                  "type": "number",
+                  "description": "How many steps to calculate between min and max, defaults to max_attempts",
+                  "minimum": 2
+                }
+              }
             }
           }
         }
