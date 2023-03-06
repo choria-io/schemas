@@ -1,0 +1,49 @@
+{
+  "$schema": "http://json-schema.org/draft-04/schema",
+  "id": "https://choria.io/schemas/choria/lifecycle/v1/upgraded.json",
+  "description": "Event publish when Choria components upgrade themselves",
+  "title": "io.choria.lifecycle.v1.upgraded",
+  "type":"object",
+  "required":[
+    "identity",
+    "id",
+    "component",
+    "version",
+    "new_version",
+    "timestamp",
+    "protocol"
+  ],
+  "properties": {
+    "protocol": {
+      "type":"string",
+      "enum": [
+        "choria:lifecycle:upgraded:1",
+        "io.choria.lifecycle.v1.upgraded"
+      ]
+    },
+    "id": {
+      "type":"string",
+      "description": "Unique correlation ID for this event"
+    },
+    "identity": {
+      "type":"string",
+      "description": "The configured identity of the component starting"
+    },
+    "component": {
+      "type":"string",
+      "description": "The component starting, eg. 'server'"
+    },
+    "version": {
+      "type":"string",
+      "description": "The version of the component starting"
+    },
+    "new_version": {
+      "type": "string",
+      "description": "Indicates the version that was upgraded to"
+    },
+    "timestamp": {
+      "type":"integer",
+      "description": "The time the component started"
+    }
+  }
+}
