@@ -689,8 +689,15 @@
             },
             "command": {
               "type": "string",
-              "description": "The command to execute, supports templating",
-              "minLength": 1
+              "description": "The command to execute, supports templating"
+            },
+            "script": {
+              "type": "string",
+              "description": "A script that will be run using a shell using -c"
+            },
+            "shell": {
+              "type": "string",
+              "description": "Path to the shell to use when executing a script, else uses SHELL environment, bash or sh"
             },
             "environment": {
               "type": "array",
@@ -729,6 +736,10 @@
             "dir": {
               "type": "string",
               "description": "Runs the command or script in a specific directory"
+            },
+            "no_helper": {
+              "type": "boolean",
+              "description": "Disables writing the shell helper temporary file"
             },
             "backoff": {
               "type": "object",
