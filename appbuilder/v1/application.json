@@ -26,6 +26,7 @@
         "anyOf": [
           {"$ref": "#/definitions/parent_command"},
           {"$ref": "#/definitions/exec_command"},
+          {"$ref": "#/definitions/scaffold_command"},
           {"$ref": "#/definitions/kv_command"},
           {"$ref": "#/definitions/rpc_command"},
           {"$ref": "#/definitions/discover_command"}
@@ -670,6 +671,70 @@
               "allOf": [
                 {"$ref": "#/definitions/transform"}
               ]
+            },
+            "flags": {
+              "type": "array",
+              "description": "Flags to accept",
+              "items": {
+                "$ref": "#/definitions/generic_flag"
+              }
+            },
+            "arguments": {
+              "type": "array",
+              "description": "Arguments to accept",
+              "items": {
+                "$ref": "#/definitions/generic_argument"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "scaffold_command": {
+      "description": "A command that scaffolds directories full of files",
+      "type": "object",
+      "allOf": [
+        {"$ref": "#/definitions/generic_command"},
+        {
+          "type": "object",
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "scaffold"
+            },
+            "target": {
+              "type": "string",
+              "description": "The directory where the files will be created in, may not exist"
+            },
+            "source_directory": {
+              "type": "string",
+              "description": "The directory where the template files can be found, cannot be used with 'source'"
+            },
+            "source": {
+              "type": "object",
+              "description": "Map holding file names and content. If the content is instead another object a directory is created and contained files are created within."
+            },
+            "post": {
+              "type": "array",
+              "description": "List of post processing commands",
+              "items": {
+                "type": "object",
+                "description": "Golang glob to match file against and a command to execute to process the file, support '{}' placeholders for filename"
+              },
+              "flags": {
+                "type": "array",
+                "description": "Flags to accept",
+                "items": {
+                  "$ref": "#/definitions/generic_flag"
+                }
+              },
+              "arguments": {
+                "type": "array",
+                "description": "Arguments to accept",
+                "items": {
+                  "$ref": "#/definitions/generic_argument"
+                }
+              }
             }
           }
         }
