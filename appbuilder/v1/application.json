@@ -88,6 +88,10 @@
           "type": "boolean",
           "description": "Indicates this flag is a boolean flag that does not accept an argument",
           "default": false
+        },
+        "validate": {
+          "type": "string",
+          "description": "A expr based validator for this specific argument"
         }
       }
     },
@@ -290,6 +294,10 @@
         "default": {
           "type": "string",
           "description": "A default value to assign to the argument"
+        },
+        "validate": {
+          "type": "string",
+          "description": "A expr based validator for this specific argument"
         }
       }
     },
