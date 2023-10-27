@@ -29,8 +29,69 @@
           {"$ref": "#/definitions/scaffold_command"},
           {"$ref": "#/definitions/kv_command"},
           {"$ref": "#/definitions/rpc_command"},
-          {"$ref": "#/definitions/discover_command"}
+          {"$ref": "#/definitions/discover_command"},
+          {"$ref": "#/definitions/form_command"}
         ]
+      }
+    },
+    "form_property": {
+      "type": "object",
+      "description": "Form input property",
+      "required": [
+        "name",
+        "description",
+        "type"
+      ],
+      "properties": {
+        "name": {
+          "description": "A unique name for this form",
+          "$ref": "#/definitions/shortname"
+        },
+        "description": {
+          "type": "string",
+          "description": "A description for this property, shown before asking the value"
+        },
+        "help": {
+          "type": "string",
+          "description": "Help shown to the user when '?' is pressed"
+        },
+        "empty": {
+          "type": "string",
+          "description": "What data item to place when the user chooses to skip entering any values for a array or object",
+          "enum": ["array","object","absent","nil"]
+        },
+        "type": {
+          "type": "string",
+          "description": "The type of data to request",
+          "enum": ["string","password","object","array"]
+        },
+        "conditional": {
+          "type": "string",
+          "description": "Conditional that would when evaluating to false prevent this property from being asked"
+        },
+        "validation": {
+          "type": "string",
+          "description": "Validation for the input provided by the user"
+        },
+        "required": {
+          "type": "boolean",
+          "default": false,
+          "description": "Indicates if an answer is required"
+        },
+        "default": {
+          "description": "The default value to assign to this entry when not given"
+        },
+        "enum": {
+          "type": "string",
+          "description": "A set of values used to limit what are valid inputs, presented as a select menu"
+        },
+        "properties": {
+          "type": "array",
+          "description": "Additional properties for nested data types",
+          "item": {
+            "$ref": "#/definitions/form_property"
+          }
+        }
       }
     },
     "generic_command_cheat": {
@@ -92,6 +153,38 @@
         "validate": {
           "type": "string",
           "description": "A expr based validator for this specific argument"
+        }
+      }
+    },
+    "scaffold_transform": {
+      "type": "object",
+      "description": "Transforms JSON data using the Scaffold system",
+      "required": ["target"],
+      "properties": {
+        "target": {
+          "type": "string",
+          "description": "The directory to write the output to"
+        },
+        "post": {
+          "type": "array",
+          "description": "List of post processing commands",
+          "items": {
+            "type": "object",
+            "description": "Golang glob to match file against and a command to execute to process the file, support '{}' placeholders for filename"
+          }
+        },
+        "skip_empty": {
+          "description": "Do not render empty files",
+          "type": "boolean",
+          "default": false
+        },
+        "left_delimiter": {
+          "type": "string",
+          "description": "Custom delimiter to use at start of template logic"
+        },
+        "right_delimiter": {
+          "type": "string",
+          "description": "Custom delimiter to use at end of template logic"
         }
       }
     },
@@ -728,21 +821,75 @@
               "items": {
                 "type": "object",
                 "description": "Golang glob to match file against and a command to execute to process the file, support '{}' placeholders for filename"
-              },
-              "flags": {
-                "type": "array",
-                "description": "Flags to accept",
-                "items": {
-                  "$ref": "#/definitions/generic_flag"
-                }
-              },
-              "arguments": {
-                "type": "array",
-                "description": "Arguments to accept",
-                "items": {
-                  "$ref": "#/definitions/generic_argument"
-                }
               }
+            },
+            "skip_empty": {
+              "description": "Do not render empty files",
+              "type": "boolean",
+              "default": false
+            },
+            "left_delimiter": {
+              "type": "string",
+              "description": "Custom delimiter to use at start of template logic"
+            },
+            "right_delimiter": {
+              "type": "string",
+              "description": "Custom delimiter to use at end of template logic"
+            },
+            "flags": {
+              "type": "array",
+              "description": "Flags to accept",
+              "items": {
+                "$ref": "#/definitions/generic_flag"
+              }
+            },
+            "arguments": {
+              "type": "array",
+              "description": "Arguments to accept",
+              "items": {
+                "$ref": "#/definitions/generic_argument"
+              }
+            }
+          }
+        }
+      ]
+    },
+    "form_command": {
+      "description": "A guided wizard for generating complex data",
+      "type": "object",
+      "allOf": [
+        {"$ref": "#/definitions/generic_command"},
+        {
+          "type": "object",
+          "required": ["properties"],
+          "properties": {
+            "properties": {
+              "description": "The list of properties to ask for",
+              "type": "array",
+              "items": {
+                "$ref": "#/definitions/form_property"
+              }
+            }
+          },
+          "transform": {
+            "type": "object",
+            "description": "When the command returns JSON output, transform it using a GOJQ query",
+            "allOf": [
+              {"$ref": "#/definitions/transform"}
+            ]
+          },
+          "flags": {
+            "type": "array",
+            "description": "Flags to accept",
+            "items": {
+              "$ref": "#/definitions/generic_flag"
+            }
+          },
+          "arguments": {
+            "type": "array",
+            "description": "Arguments to accept",
+            "items": {
+              "$ref": "#/definitions/generic_argument"
             }
           }
         }
