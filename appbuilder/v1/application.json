@@ -58,12 +58,12 @@
         "empty": {
           "type": "string",
           "description": "What data item to place when the user chooses to skip entering any values for a array or object",
-          "enum": ["array","object","absent","nil"]
+          "enum": ["array", "object", "absent"]
         },
         "type": {
           "type": "string",
           "description": "The type of data to request",
-          "enum": ["string","password","object","array"]
+          "enum": ["string", "password", "object", "array", "integer", "float"]
         },
         "conditional": {
           "type": "string",
