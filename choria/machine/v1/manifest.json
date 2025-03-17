@@ -5,6 +5,20 @@
     "type":"object",
     "required":["name","version","initial_state","transitions","watchers"],
     "definitions": {
+        "ForeignMachineState": {
+            "type": "object",
+            "required": ["machine_name", "state"],
+            "properties": {
+                "machine_name": {
+                    "description": "Name of a foreign autonomous agent",
+                    "$ref":"#/definitions/GenericName"
+                },
+                "state": {
+                    "description": "The name of the remote state",
+                    "$ref":"#/definitions/GenericName"
+                }
+            }
+        },
         "GoDuration": {
             "type":"string",
             "pattern": "^\\d+[hms]$"
@@ -17,6 +31,20 @@
             "type":"string",
             "description": "Environment variable as accepted by Go exec package",
             "pattern": "^[a-zA-Z_]+[a-zA-Z0-9_]*=.+"
+        },
+        "MachineSubscription": {
+            "type": "object",
+            "required": ["machine_name", "event"],
+            "properties": {
+                "machine_name": {
+                    "description": "The name of the foreign machine to subscribe to",
+                    "$ref":"#/definitions/GenericName"
+                },
+                "event": {
+                    "description": "The name of the event to subscribe to",
+                    "$ref":"#/definitions/GenericName"
+                }
+            }
         },
         "Transition": {
             "type":"object",
@@ -42,6 +70,10 @@
                 "description": {
                     "description": "A human friendly description of the purpose of this transition",
                     "type": "string"
+                },
+                "subscribe": {
+                    "description": "Subscribe to events from foreign autonomous agents",
+                    "$ref": "#/definitions/MachineSubscription"
                 }
             }
         },
@@ -60,6 +92,10 @@
                     "items": {
                         "$ref":"#/definitions/GenericName"
                     }
+                },
+                "foreign_state_required": {
+                    "description": "Foreign state that must match for this watcher to be active",
+                    "$ref": "#/definitions/ForeignMachineState"
                 },
                 "fail_transition": {
                     "description": "When this watcher fails the machine will receive this transition event",
