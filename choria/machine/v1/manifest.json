@@ -115,154 +115,124 @@
                 }
             }
         },
-        "WatcherKVProperties": {
+        "WatcherArchiveProperties": {
             "type": "object",
-            "default": "KV watcher properties",
-            "required": ["bucket"],
+            "description": "Archive watcher properties",
+            "required": ["source", "target"],
             "properties": {
-                "bucket": {
-                    "description": "The Bucket name that holds the data",
+                "checksum": {
+                    "description": "A sha256 hex string of the archive being downloaded",
                     "type": "string",
-                    "pattern": "^[a-zA-Z0-9_-]+$"
+                    "pattern": "^[a-fA-F0-9]{64}$"
                 },
-                "key": {
-                    "description": "The key to watch for changes",
-                    "type": "string",
-                    "pattern": "\\A[-/_a-zA-Z0-9]+\\z"
+                "creates": {
+                    "description": "A subdirectory that the tarball will create on untar",
+                    "type": "string"
                 },
-                "mode": {
-                    "description": "The method used for watching the values, must be poll for bucket watch",
-                    "type": "string",
-                    "default": "poll",
-                    "enum": ["poll","watch"]
+                "governor": {
+                    "description": "The optional name of a governor to use for concurrency control",
+                    "type": "string"
                 },
-                "bucket_prefix": {
-                    "description": "When storing data prefix the data keys with the Bucket name",
+                "governor_timeout": {
+                    "description": "How long to try accessing the governor",
+                    "default": "5m",
+                    "$ref": "#/definitions/GoDuration"
+                },
+                "insecure": {
+                    "description": "Skip TLS verification on https downloads",
                     "type": "boolean",
-                    "default": true
-                }
-            }
-        },
-        "WatcherKV": {
-            "description": "A watcher that observes the state of a Choria Key-Value store Bucket or Key",
-            "type": "object",
-            "additionalItems": false,
-            "allOf": [
-                {
-                    "type":"object",
-                    "required": ["type"],
-                    "properties": {
-                        "type": {
-                            "enum": ["kv"]
-                        }
-                    }
+                    "default": false
                 },
-                {"$ref":"#/definitions/WatcherBase"},
-                {
-                    "type":"object",
-                    "required": ["properties"],
-                    "properties": {
-                        "properties": { "$ref":"#/definitions/WatcherKVProperties" }
-                    }
-                }
-            ]
-        },
-        "WatcherFileProperties": {
-            "type":"object",
-            "description": "File watcher properties",
-            "required": ["path"],
-            "properties": {
-                "path": {
-                    "type": "string",
-                    "description": "The path to a file to watch relative to the machine root"
+                "password": {
+                    "description": "Password for accessing the source, required when a username is set",
+                    "type": "string"
                 },
-                "gather_initial_state": {
-                    "type":"boolean",
-                    "description": "If the properties of the file should be gathered on initial load"
-                }
-            }
-        },
-        "WatcherFile": {
-            "description": "A watcher that observes the state of a file regularly",
-            "type": "object",
-            "additionalItems": false,
-            "allOf": [
-                {
-                    "type":"object",
-                    "required": ["type"],
-                    "properties": {
-                        "type": {
-                            "enum": ["file"]
-                        }
-                    }
+                "source": {
+                    "description": "URL to the file being downloaded, only tar.gz format is supported",
+                    "type": "string"
                 },
-                {"$ref":"#/definitions/WatcherBase"},
-                {
-                    "type":"object",
-                    "required": ["properties"],
-                    "properties": {
-                        "properties": { "$ref":"#/definitions/WatcherFileProperties" }
-                    }
-                }
-            ]
-        },
-        "WatcherNagiosProperties": {
-            "type": "object",
-            "description": "Nagios watcher properties",
-            "required": ["plugin"],
-            "properties": {
-                "annotations": {
-                    "type": "object",
-                    "description": "Map of strings presented as additional annotations per check",
-                    "propertyNames": {
-                        "pattern": "^[a-zA-Z_-]+$",
-                        "type": "string"
-                    }
-                },
-                "builtin": {
-                    "type": "string",
-                    "description": "Execute an internal plugin",
-                    "enum": ["goss", "heartbeat", "choria_status"]
-                },
-                "plugin": {
-                    "type": "string",
-                    "description": "The Nagios plugin to run including it's arguments"
+                "target": {
+                    "description": "The directory where the tarball will be extracted",
+                    "type": "string"
                 },
                 "timeout": {
-                    "description": "How long the commands are allowed to run",
+                    "description": "How long HTTP operations are allowed to take",
                     "default": "10s",
-                    "$ref":"#/definitions/GoDuration"
+                    "$ref": "#/definitions/GoDuration"
                 },
-                "gossfile": {
-                    "description": "For the goss builtin, a check specific YAML file",
+                "username": {
+                    "description": "Username to use when downloading, password is required in addition",
                     "type": "string"
                 },
-                "last_message": {
-                    "description": "For the choria_status builtin how long ago the last RPC message should have been received, specified in go duration string format",
+                "verify": {
+                    "description": "A file in the archive made using sha256 used for verification of files in the archive after extraction and on every interval check",
                     "type": "string"
+                },
+                "verify_checksum": {
+                    "description": "A sha256 hex string of the file specified in verify",
+                    "type": "string",
+                    "pattern": "^[a-fA-F0-9]{64}$"
                 }
             }
         },
-        "WatcherNagios": {
-            "description": "A watcher that executes Nagios plugins",
+        "WatcherArchive": {
+            "description": "A watcher that downloads, extracts and, optionally, integrity check and remediate tar.gz files.",
             "type": "object",
             "additionalItems": false,
             "allOf": [
                 {
                     "type":"object",
-                    "required": ["properties"],
+                    "required": ["type"],
                     "properties": {
-                        "properties": { "$ref":"#/definitions/WatcherNagiosProperties" }
+                        "type": {
+                            "enum": ["archive"]
+                        }
                     }
                 },
                 {"$ref":"#/definitions/WatcherBase"},
                 {
                     "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherArchiveProperties" }
+                    }
+                }
+            ]
+        },
+        "WatcherExpressionProperties": {
+            "type": "object",
+            "description": "Expression watcher properties",
+            "properties": {
+                "fail_when": {
+                    "description": "Expression that when true causes the watcher to fail",
+                    "type": "string"
+                },
+                "success_when": {
+                    "description": "Expression that when true causes the watcher to succeed",
+                    "type": "string"
+                }
+            }
+        },
+        "WatcherExpression": {
+            "description": "A watcher that evaluates expressions to determine success or failure states",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
                     "required": ["type"],
                     "properties": {
                         "type": {
-                            "enum": ["nagios"]
+                            "enum": ["expression"]
                         }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherExpressionProperties" }
                     }
                 }
             ]
@@ -306,6 +276,11 @@
                     "description": "How long the commands are allowed to run",
                     "default": "10s",
                     "$ref":"#/definitions/GoDuration"
+                },
+                "disown": {
+                    "description": "Disown the process so it will survive after Choria stops",
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
@@ -333,6 +308,389 @@
                 }
             ]
         },
+        "WatcherFileProperties": {
+            "type":"object",
+            "description": "File watcher properties",
+            "required": ["path"],
+            "properties": {
+                "path": {
+                    "type": "string",
+                    "description": "The path to a file to watch relative to the watcher manifest directory"
+                },
+                "gather_initial_state": {
+                    "type":"boolean",
+                    "description": "Gathers the initial file mode, stats etc for regular announces but only perform first watch after interval"
+                },
+                "contents": {
+                    "type": "string",
+                    "description": "Specific content to place into the file, supports template parsing and data lookup"
+                },
+                "owner": {
+                    "type": "string",
+                    "description": "What should own the file when managing content"
+                },
+                "group": {
+                    "type": "string",
+                    "description": "What group should own the file when managing content"
+                },
+                "mode": {
+                    "type": "string",
+                    "description": "The file mode to apply when managing content",
+                    "pattern": "^0[0-7]{3}$"
+                }
+            }
+        },
+        "WatcherFile": {
+            "description": "A watcher that observes the state of a file regularly",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["file"]
+                        }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherFileProperties" }
+                    }
+                }
+            ]
+        },
+        "WatcherHttpSwitchProperties": {
+            "type": "object",
+            "description": "HTTP Switch watcher properties",
+            "properties": {
+                "on_when": {
+                    "description": "When the machine is in any of these states the button will be report as on",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/GenericName"
+                    }
+                },
+                "off_when": {
+                    "description": "When the machine is in any of these states the button will be report as off",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/GenericName"
+                    }
+                },
+                "disable_when": {
+                    "description": "When the machine is in any of these states the button will stop functioning",
+                    "type": "array",
+                    "items": {
+                        "$ref": "#/definitions/GenericName"
+                    }
+                },
+                "annotations": {
+                    "description": "Additional annotations to apply to the watcher",
+                    "type": "object",
+                    "propertyNames": {
+                        "pattern": "^[a-zA-Z_-]+$",
+                        "type": "string"
+                    }
+                }
+            }
+        },
+        "WatcherHttpSwitch": {
+            "description": "A watcher that provides HTTP-based switch functionality based on machine state",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["httpswitch"]
+                        }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherHttpSwitchProperties" }
+                    }
+                }
+            ]
+        },
+        "WatcherKVProperties": {
+            "type": "object",
+            "default": "KV watcher properties",
+            "required": ["bucket"],
+            "properties": {
+                "bucket": {
+                    "description": "The Bucket name that holds the data",
+                    "type": "string",
+                    "pattern": "^[a-zA-Z0-9_-]+$"
+                },
+                "key": {
+                    "description": "The key to watch for changes",
+                    "type": "string",
+                    "pattern": "\\A[-/_a-zA-Z0-9]+\\z"
+                },
+                "mode": {
+                    "description": "The method used for watching the values, must be poll for bucket watch",
+                    "type": "string",
+                    "default": "poll",
+                    "enum": ["poll","watch"]
+                },
+                "bucket_prefix": {
+                    "description": "When storing data prefix the data keys with the Bucket name",
+                    "type": "boolean",
+                    "default": true
+                },
+                "on_successful_get": {
+                    "description": "When data was received trigger this event",
+                    "type": "string"
+                },
+                "on_matching_update": {
+                    "description": "Event to trigger when data did not change since last get",
+                    "type": "string"
+                },
+                "republish_trigger": {
+                    "description": "Sets up a listener for a Core NATS trigger event indicating the KV was updated",
+                    "type": "string"
+                },
+                "hiera_config": {
+                    "description": "Enables parsing received data as a Choria Hierarchical Data Structure",
+                    "type": "boolean",
+                    "default": false
+                }
+            }
+        },
+        "WatcherKV": {
+            "description": "A watcher that observes the state of a Choria Key-Value store Bucket or Key",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["kv"]
+                        }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherKVProperties" }
+                    }
+                }
+            ]
+        },
+        "WatcherMetricProperties": {
+            "type":"object",
+            "description": "Metric watcher properties",
+            "required": ["command", "interval"],
+            "properties": {
+                "command": {
+                    "description": "The path to the command to run to retrieve the metric",
+                    "type": "string"
+                },
+                "interval": {
+                    "description": "The duration for how frequently to gather metrics",
+                    "$ref": "#/definitions/GoDuration"
+                },
+                "labels": {
+                    "description": "Key=value pairs of strings of additional labels to add to gathered metrics",
+                    "type": "object",
+                    "propertyNames": {
+                        "pattern": "^[a-zA-Z_-]+$",
+                        "type": "string"
+                    }
+                },
+                "skip_prometheus": {
+                    "description": "Disables publishing metrics to Prometheus",
+                    "type": "boolean",
+                    "default": false
+                },
+                "store": {
+                    "description": "Stores the metric to the Machine Data",
+                    "type": "boolean",
+                    "default": false
+                },
+                "http": {
+                    "description": "Expose metrics over the HTTP port",
+                    "type": "boolean",
+                    "default": false
+                },
+                "graphite_host": {
+                    "description": "Graphite host to send metrics to",
+                    "type": "string"
+                },
+                "graphite_port": {
+                    "description": "Graphite port to send metrics to",
+                    "type": "string"
+                },
+                "graphite_prefix": {
+                    "description": "Prefix to apply to Graphite metrics",
+                    "type": "string"
+                }
+            }
+        },
+        "WatcherMetric": {
+            "description": "A watcher that periodically runs a command and expose metrics found to Prometheus",
+            "type":"object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required":["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherMetricProperties" }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["schedule"]
+                        }
+                    }
+                }
+            ]
+        },
+        "WatcherNagiosProperties": {
+            "type": "object",
+            "description": "Nagios watcher properties",
+            "required": ["plugin"],
+            "properties": {
+                "annotations": {
+                    "type": "object",
+                    "description": "Map of strings presented as additional annotations per check",
+                    "propertyNames": {
+                        "pattern": "^[a-zA-Z_-]+$",
+                        "type": "string"
+                    }
+                },
+                "builtin": {
+                    "type": "string",
+                    "description": "Execute an internal plugin",
+                    "enum": ["goss", "heartbeat", "choria_status"]
+                },
+                "plugin": {
+                    "type": "string",
+                    "description": "The Nagios plugin to run including it's arguments"
+                },
+                "timeout": {
+                    "description": "How long the commands are allowed to run",
+                    "default": "10s",
+                    "$ref":"#/definitions/GoDuration"
+                },
+                "gossfile": {
+                    "description": "For the goss builtin, a check specific YAML file",
+                    "type": "string"
+                },
+                "last_message": {
+                    "description": "For the choria_status builtin how long ago the last RPC message should have been received, specified in go duration string format",
+                    "$ref": "#/definitions/GoDuration"
+                },
+                "pubcert_expire": {
+                    "description": "For the choria_status builtin how long till the certificate expires, specified in go duration string format",
+                    "$ref": "#/definitions/GoDuration"
+                },
+                "token_expire": {
+                    "description": "For the choria_status builtin how long till the JWT token expires, specified in go duration string format",
+                    "$ref": "#/definitions/GoDuration"
+                }
+            }
+        },
+        "WatcherNagios": {
+            "description": "A watcher that executes Nagios plugins",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherNagiosProperties" }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["nagios"]
+                        }
+                    }
+                }
+            ]
+        },
+        "WatcherPluginsProperties": {
+            "type": "object",
+            "description": "Plugin watcher properties",
+            "required": ["data_item", "manager_machine_prefix"],
+            "properties": {
+                "data_item": {
+                    "description": "The data item key to get ManagedPlugin from, typically sourced from Key-Value store",
+                    "type": "string"
+                },
+                "purge_unknown": {
+                    "description": "Will remove plugins not declared in data_item",
+                    "type": "boolean",
+                    "default": false
+                },
+                "plugin_manage_interval": {
+                    "description": "The interval that created management machines will use to manage their archives",
+                    "$ref": "#/definitions/GoDuration"
+                },
+                "public_key": {
+                    "description": "The optional ed25519 public key used to sign the specification, when set the specification received will be validated and any invalid specification will be discarded",
+                    "type": "string"
+                },
+                "plugins_directory": {
+                    "description": "Sets the directory where plugins are being deployed into, when empty defaults to plugins directory like /etc/choria/machines",
+                    "type": "string"
+                },
+                "manager_machine_prefix": {
+                    "description": "The prefix used in constructing names for the management machines",
+                    "type": "string"
+                }
+            }
+        },
+        "WatcherPlugins": {
+            "description": "A watcher that manages plugin deployment and lifecycle",
+            "type": "object",
+            "additionalItems": false,
+            "allOf": [
+                {
+                    "type":"object",
+                    "required": ["type"],
+                    "properties": {
+                        "type": {
+                            "enum": ["plugins"]
+                        }
+                    }
+                },
+                {"$ref":"#/definitions/WatcherBase"},
+                {
+                    "type":"object",
+                    "required": ["properties"],
+                    "properties": {
+                        "properties": { "$ref":"#/definitions/WatcherPluginsProperties" }
+                    }
+                }
+            ]
+        },
         "WatcherScheduleProperties": {
             "type":"object",
             "description": "Schedule watcher properties",
@@ -352,6 +710,11 @@
                     "items": {
                         "type":"string"
                     }
+                },
+                "skip_trigger_on_reenter": {
+                    "description": "Skips triggering success when changing between 2 states that are both active in the scheduler",
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
@@ -387,6 +750,11 @@
                 "timer": {
                     "description": "How long the timer should run for",
                     "$ref":"#/definitions/GoDuration"
+                },
+                "splay": {
+                    "description": "Spread the start of the timer randomly",
+                    "type": "boolean",
+                    "default": false
                 }
             }
         },
@@ -400,130 +768,6 @@
                     "required":["properties"],
                     "properties": {
                         "properties": { "$ref":"#/definitions/WatcherTimerProperties" }
-                    }
-                },
-                {"$ref":"#/definitions/WatcherBase"},
-                {
-                    "type":"object",
-                    "required": ["type"],
-                    "properties": {
-                        "type": {
-                            "enum": ["schedule"]
-                        }
-                    }
-                }
-            ]
-        },
-        "WatcherHomeKitProperties": {
-            "type":"object",
-            "description": "Home Kit watcher properties",
-            "required": ["pin"],
-            "properties": {
-                "pin": {
-                    "description": "The pin to enter when setting up the Homekit device",
-                    "type": "string",
-                    "pattern": "^[0-9]+$"
-                },
-                "serial_number": {
-                    "description": "The serial number to report to Home Kit",
-                    "type": "string"
-                },
-                "model": {
-                    "description": "The model to report to Home Kit",
-                    "type": "string",
-                    "default": "Autonomous Agent"
-                },
-                "setup_id": {
-                    "description": "The Home Kit set up id to report",
-                    "type": "string"
-                },
-                "initial": {
-                    "description": "The initial state of the button",
-                    "enum": ["on","off"],
-                    "type": "string"
-                },
-                "on_when": {
-                    "description": "When in any of these states the button will be on",
-                    "type": "array",
-                    "items": {
-                        "$ref":"#/definitions/GenericName"
-                    }
-                },
-                "off_when": {
-                    "description": "When in any of these states the button will be off",
-                    "type": "array",
-                    "items": {
-                        "$ref":"#/definitions/GenericName"
-                    }
-                },
-                "disable_when": {
-                    "description": "When in any of these states the button will be disabled",
-                    "type": "array",
-                    "items": {
-                        "$ref":"#/definitions/GenericName"
-                    }
-                }
-            }
-        },
-        "WatcherHomekit": {
-            "description": "A watcher creates an Apple Home Kit button that can be activated via iOS devices and Siri",
-            "type":"object",
-            "additionalItems": false,
-            "allOf": [
-                {
-                    "type":"object",
-                    "required":["properties"],
-                    "properties": {
-                        "properties": { "$ref":"#/definitions/WatcherHomeKitProperties" }
-                    }
-                },
-                {"$ref":"#/definitions/WatcherBase"},
-                {
-                    "type":"object",
-                    "required": ["type"],
-                    "properties": {
-                        "type": {
-                            "enum": ["schedule"]
-                        }
-                    }
-                }
-            ]
-        },
-        "WatcherMetricProperties": {
-            "type":"object",
-            "description": "Metric watcher properties",
-            "required": ["command", "interval"],
-            "properties": {
-                "command": {
-                    "description": "The path to the command to run to retrieve the metric data",
-                    "type": "string"
-                },
-                "interval": {
-                    "description": "Interval to run the command",
-                    "$ref": "#/definitions/GoDuration"
-                },
-                "labels": {
-                    "description": "Labels that would override those from the command",
-                    "type": "object",
-                    "propertyNames": {
-                        "propertyNames": {
-                            "pattern": "^[a-zA-Z_-]+$",
-                            "type": "string"
-                        }
-                    }
-                }
-            }
-        },
-        "WatcherMetric": {
-            "description": "A watcher that periodically runs a command and expose metrics found to Prometheus",
-            "type":"object",
-            "additionalItems": false,
-            "allOf": [
-                {
-                    "type":"object",
-                    "required":["properties"],
-                    "properties": {
-                        "properties": { "$ref":"#/definitions/WatcherMetricProperties" }
                     }
                 },
                 {"$ref":"#/definitions/WatcherBase"},
@@ -568,14 +812,17 @@
             "minItems": 1,
             "items": {
                 "anyOf": [
-                    {"$ref":"#/definitions/WatcherFile"},
+                    {"$ref": "#/definitions/WatcherArchive"},
                     {"$ref":"#/definitions/WatcherExec"},
-                    {"$ref":"#/definitions/WatcherNagios"},
-                    {"$ref":"#/definitions/WatcherSchedule"},
-                    {"$ref":"#/definitions/WatcherHomekit"},
-                    {"$ref":"#/definitions/WatcherTimer"},
+                    {"$ref":"#/definitions/WatcherExpression"},
+                    {"$ref":"#/definitions/WatcherFile"},
+                    {"$ref":"#/definitions/WatcherHttpSwitch"},
+                    {"$ref":"#/definitions/WatcherKV"},
                     {"$ref":"#/definitions/WatcherMetric"},
-                    {"$ref":"#/definitions/WatcherKV"}
+                    {"$ref":"#/definitions/WatcherNagios"},
+                    {"$ref":"#/definitions/WatcherPlugins"},
+                    {"$ref":"#/definitions/WatcherSchedule"},
+                    {"$ref":"#/definitions/WatcherTimer"}
                 ]
             }
         }
