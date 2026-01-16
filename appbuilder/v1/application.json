@@ -39,8 +39,7 @@
       "description": "Form input property",
       "required": [
         "name",
-        "description",
-        "type"
+        "description"
       ],
       "properties": {
         "name": {
