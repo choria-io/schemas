@@ -155,6 +155,21 @@
         }
       }
     },
+    "ccm_manifest_transform": {
+      "type": "object",
+      "description": "Invoke Choria Configuration Manager (CCM) manifests",
+      "required": ["manifest"],
+      "properties": {
+        "manifest": {
+          "type": "string",
+          "description": "The url to the manifest to execute"
+        },
+        "nats_context": {
+          "type": "string",
+          "description": "The NATS context to use when invoking the manifest"
+        }
+      }
+    },
     "scaffold_transform": {
       "type": "object",
       "description": "Transforms JSON data using the Scaffold system",
@@ -340,6 +355,12 @@
         "write_file": {
           "$ref": "#/definitions/write_file_transform"
         },
+        "ccm_manifest": {
+          "$ref": "#/definitions/ccm_manifest_transform"
+        },
+        "scaffold": {
+          "$ref": "#/definitions/scaffold_transform"
+        },
 
         "pipeline": {
           "type": "array",
@@ -351,7 +372,9 @@
               {"$ref": "#/definitions/line_graph_transform"},
               {"$ref": "#/definitions/report_transform"},
               {"$ref": "#/definitions/template_transform"},
-              {"$ref": "#/definitions/write_file_transform"}
+              {"$ref": "#/definitions/write_file_transform"},
+              {"$ref": "#/definitions/scaffold_transform"},
+              {"$ref": "#/definitions/ccm_manifest_transform"}
             ]
           }
         }
