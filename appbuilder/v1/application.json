@@ -30,7 +30,8 @@
           {"$ref": "#/definitions/kv_command"},
           {"$ref": "#/definitions/rpc_command"},
           {"$ref": "#/definitions/discover_command"},
-          {"$ref": "#/definitions/form_command"}
+          {"$ref": "#/definitions/form_command"},
+          {"$ref": "#/definitions/ccm_manifest_command"}
         ]
       }
     },
@@ -167,6 +168,14 @@
         "nats_context": {
           "type": "string",
           "description": "The NATS context to use when invoking the manifest"
+        },
+        "render_summary": {
+          "type": "boolean",
+          "description": "When true will display the summary statistics on STDOUT"
+        },
+        "no_render_messages": {
+          "type": "boolean",
+          "description": "When true will not show the pre- or post-message defined in the manifest"
         }
       }
     },
@@ -900,6 +909,60 @@
           "transform": {
             "type": "object",
             "description": "When the command returns JSON output, transform it using a GOJQ query",
+            "allOf": [
+              {"$ref": "#/definitions/transform"}
+            ]
+          },
+          "flags": {
+            "type": "array",
+            "description": "Flags to accept",
+            "items": {
+              "$ref": "#/definitions/generic_flag"
+            }
+          },
+          "arguments": {
+            "type": "array",
+            "description": "Arguments to accept",
+            "items": {
+              "$ref": "#/definitions/generic_argument"
+            }
+          }
+        }
+      ]
+    },
+    "ccm_manifest_command": {
+      "description": "Invoke Choria Configuration Manager (CCM) manifests",
+      "type": "object",
+      "allOf": [
+        {"$ref": "#/definitions/generic_command"},
+        {
+          "type": "object",
+          "required": ["manifest"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "ccm_manifest"
+            },
+            "manifest": {
+              "type": "string",
+              "description": "The url to the manifest to execute"
+            },
+            "nats_context": {
+              "type": "string",
+              "description": "The NATS context to use when invoking the manifest"
+            },
+            "render_summary": {
+              "type": "boolean",
+              "description": "When true will display the summary statistics on STDOUT"
+            },
+            "no_render_messages": {
+              "type": "boolean",
+              "description": "When true will not show the pre- or post-message defined in the manifest"
+            }
+          },
+          "transform": {
+            "type": "object",
+            "description": "Transformations over manifest summary data",
             "allOf": [
               {"$ref": "#/definitions/transform"}
             ]
