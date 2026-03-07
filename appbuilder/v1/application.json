@@ -63,7 +63,7 @@
         "type": {
           "type": "string",
           "description": "The type of data to request",
-          "enum": ["string", "password", "object", "array", "integer", "float"]
+          "enum": ["string", "bool", "password", "object", "array", "integer", "float"]
         },
         "conditional": {
           "type": "string",
@@ -79,16 +79,20 @@
           "description": "Indicates if an answer is required"
         },
         "default": {
+          "type": "string",
           "description": "The default value to assign to this entry when not given"
         },
         "enum": {
-          "type": "string",
-          "description": "A set of values used to limit what are valid inputs, presented as a select menu"
+          "type": "array",
+          "description": "A set of values used to limit what are valid inputs, presented as a select menu",
+          "items": {
+            "type": "string"
+          }
         },
         "properties": {
           "type": "array",
           "description": "Additional properties for nested data types",
-          "item": {
+          "items": {
             "$ref": "#/definitions/form_property"
           }
         }
@@ -153,6 +157,16 @@
         "validate": {
           "type": "string",
           "description": "A expr based validator for this specific argument"
+        },
+        "env": {
+          "type": "string",
+          "description": "An environment variable to use to populate the value of this flag"
+        },
+        "short": {
+          "type": "string",
+          "description": "A single character short flag alias",
+          "maxLength": 1,
+          "minLength": 1
         }
       }
     },
@@ -188,6 +202,14 @@
           "type": "string",
           "description": "The directory to write the output to"
         },
+        "source_directory": {
+          "type": "string",
+          "description": "The directory where the template files can be found, cannot be used with 'source'"
+        },
+        "source": {
+          "type": "object",
+          "description": "Map holding file names and content. If the content is instead another object a directory is created and contained files are created within."
+        },
         "post": {
           "type": "array",
           "description": "List of post processing commands",
@@ -218,6 +240,11 @@
       "properties": {
         "query": {
           "type": "string"
+        },
+        "yaml_input": {
+          "type": "boolean",
+          "description": "When true expect input in YAML format and convert to JSON before processing",
+          "default": false
         }
       }
     },
@@ -273,6 +300,24 @@
           "description": "Loads the template from a file in this path"
         }
       }
+    },
+    "to_json_transform": {
+      "type": "object",
+      "description": "Converts from YAML or JSON into JSON",
+      "properties": {
+        "prefix": {
+          "type": "string",
+          "description": "Prefix for JSON indentation"
+        },
+        "indent": {
+          "type": "string",
+          "description": "Indentation string for JSON output"
+        }
+      }
+    },
+    "to_yaml_transform": {
+      "type": "object",
+      "description": "Converts from JSON to YAML"
     },
     "report_transform": {
       "type": "object",
@@ -370,21 +415,18 @@
         "scaffold": {
           "$ref": "#/definitions/scaffold_transform"
         },
+        "to_json": {
+          "$ref": "#/definitions/to_json_transform"
+        },
+        "to_yaml": {
+          "$ref": "#/definitions/to_yaml_transform"
+        },
 
         "pipeline": {
           "type": "array",
           "description": "List of transforms to apply in order",
           "items": {
-            "anyOf": [
-              {"$ref": "#/definitions/jq_transform"},
-              {"$ref": "#/definitions/bar_graph_transform"},
-              {"$ref": "#/definitions/line_graph_transform"},
-              {"$ref": "#/definitions/report_transform"},
-              {"$ref": "#/definitions/template_transform"},
-              {"$ref": "#/definitions/write_file_transform"},
-              {"$ref": "#/definitions/scaffold_transform"},
-              {"$ref": "#/definitions/ccm_manifest_transform"}
-            ]
+            "$ref": "#/definitions/transform"
           }
         }
       }
@@ -476,6 +518,10 @@
               "description": "Sub commands to add below this one",
               "$ref": "#/definitions/commands",
               "minItems": 1
+            },
+            "include_file": {
+              "type": "string",
+              "description": "Path to a YAML file to load parent command definition from"
             }
           }
         }
@@ -484,7 +530,7 @@
     "rpc_filter": {
       "description": "Standard Choria RPC discovery options",
       "type": "object",
-      "additionalItems": false,
+      "additionalProperties": false,
       "properties": {
         "collective": {
           "type": "string",
@@ -559,7 +605,7 @@
         "discovery_options": {
           "type": "object",
           "description": "Discovery options as a map of string values",
-          "additionalItems": {
+          "additionalProperties": {
             "type": "string"
           }
         }
@@ -568,7 +614,7 @@
     "discover_command": {
       "description": "A command that does Choria based node discovery. Only available within Choria Server.",
       "type": "object",
-      "additionalItems": false,
+      "additionalProperties": false,
       "allOf": [
         {
           "$ref": "#/definitions/generic_command"
@@ -616,7 +662,7 @@
     },
     "rpc_command": {
       "description": "A command that interact with the Choria RPC system. Available only within Choria Server not App Builder.",
-      "additionalItems": false,
+      "additionalProperties": false,
       "type": "object",
       "allOf": [
         {
@@ -745,7 +791,7 @@
     "kv_command": {
       "description": "A command that interact with the Choria Key-Value store. Available only within Choria Server not App Builder.",
       "type": "object",
-      "additionalItems": false,
+      "additionalProperties": false,
       "allOf": [
         {
           "$ref": "#/definitions/generic_command"
@@ -880,6 +926,12 @@
               "items": {
                 "$ref": "#/definitions/generic_argument"
               }
+            },
+            "commands": {
+              "type": "array",
+              "description": "Sub commands to add below this one",
+              "$ref": "#/definitions/commands",
+              "minItems": 1
             }
           }
         }
@@ -904,27 +956,33 @@
               "items": {
                 "$ref": "#/definitions/form_property"
               }
-            }
-          },
-          "transform": {
-            "type": "object",
-            "description": "When the command returns JSON output, transform it using a GOJQ query",
-            "allOf": [
-              {"$ref": "#/definitions/transform"}
-            ]
-          },
-          "flags": {
-            "type": "array",
-            "description": "Flags to accept",
-            "items": {
-              "$ref": "#/definitions/generic_flag"
-            }
-          },
-          "arguments": {
-            "type": "array",
-            "description": "Arguments to accept",
-            "items": {
-              "$ref": "#/definitions/generic_argument"
+            },
+            "transform": {
+              "type": "object",
+              "description": "When the command returns JSON output, transform it using a GOJQ query",
+              "allOf": [
+                {"$ref": "#/definitions/transform"}
+              ]
+            },
+            "flags": {
+              "type": "array",
+              "description": "Flags to accept",
+              "items": {
+                "$ref": "#/definitions/generic_flag"
+              }
+            },
+            "arguments": {
+              "type": "array",
+              "description": "Arguments to accept",
+              "items": {
+                "$ref": "#/definitions/generic_argument"
+              }
+            },
+            "commands": {
+              "type": "array",
+              "description": "Sub commands to add below this one",
+              "$ref": "#/definitions/commands",
+              "minItems": 1
             }
           }
         }
@@ -958,27 +1016,33 @@
             "no_render_messages": {
               "type": "boolean",
               "description": "When true will not show the pre- or post-message defined in the manifest"
-            }
-          },
-          "transform": {
-            "type": "object",
-            "description": "Transformations over manifest summary data",
-            "allOf": [
-              {"$ref": "#/definitions/transform"}
-            ]
-          },
-          "flags": {
-            "type": "array",
-            "description": "Flags to accept",
-            "items": {
-              "$ref": "#/definitions/generic_flag"
-            }
-          },
-          "arguments": {
-            "type": "array",
-            "description": "Arguments to accept",
-            "items": {
-              "$ref": "#/definitions/generic_argument"
+            },
+            "transform": {
+              "type": "object",
+              "description": "Transformations over manifest summary data",
+              "allOf": [
+                {"$ref": "#/definitions/transform"}
+              ]
+            },
+            "flags": {
+              "type": "array",
+              "description": "Flags to accept",
+              "items": {
+                "$ref": "#/definitions/generic_flag"
+              }
+            },
+            "arguments": {
+              "type": "array",
+              "description": "Arguments to accept",
+              "items": {
+                "$ref": "#/definitions/generic_argument"
+              }
+            },
+            "commands": {
+              "type": "array",
+              "description": "Sub commands to add below this one",
+              "$ref": "#/definitions/commands",
+              "minItems": 1
             }
           }
         }
@@ -1082,6 +1146,7 @@
       ]
     }
   },
+  "required": ["name", "version", "author", "commands"],
   "properties": {
     "name": {
       "description": "A unique name for this application",
@@ -1112,9 +1177,13 @@
     },
     "help_template": {
       "type": "string",
-      "enum": ["","default", "compact", "columns", "long"],
+      "enum": ["","default", "compact", "short", "long"],
       "default": "default",
       "description": "Selects a help template to use for the app"
+    },
+    "include_file": {
+      "type": "string",
+      "description": "Path to a YAML file to load application definition from"
     },
     "cheat": {
       "type": "object",
