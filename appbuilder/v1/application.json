@@ -31,7 +31,8 @@
           {"$ref": "#/definitions/rpc_command"},
           {"$ref": "#/definitions/discover_command"},
           {"$ref": "#/definitions/form_command"},
-          {"$ref": "#/definitions/ccm_manifest_command"}
+          {"$ref": "#/definitions/ccm_manifest_command"},
+          {"$ref": "#/definitions/file_command"}
         ]
       }
     },
@@ -112,6 +113,63 @@
         }
       }
     },
+    "input_type": {
+      "type": "string",
+      "description": "The data type an argument or flag is validated against and cast to",
+      "default": "string",
+      "enum": [
+        "string",
+        "bool",
+        "existing_file",
+        "existing_dir",
+        "counter",
+        "int",
+        "integer",
+        "int8",
+        "int16",
+        "int32",
+        "int64",
+        "uint",
+        "uint8",
+        "uint16",
+        "uint32",
+        "uint64",
+        "float",
+        "float32",
+        "float64"
+      ]
+    },
+    "input_type_conflicts": {
+      "description": "Type may only be combined with enum when it is string and with the deprecated bool property when it is bool",
+      "allOf": [
+        {
+          "if": {
+            "required": ["type", "enum"],
+            "properties": {
+              "enum": {"minItems": 1}
+            }
+          },
+          "then": {
+            "properties": {
+              "type": {"const": "string"}
+            }
+          }
+        },
+        {
+          "if": {
+            "required": ["type", "bool"],
+            "properties": {
+              "bool": {"const": true}
+            }
+          },
+          "then": {
+            "properties": {
+              "type": {"const": "bool"}
+            }
+          }
+        }
+      ]
+    },
     "generic_flag": {
       "type": "object",
       "required": [
@@ -167,8 +225,15 @@
           "description": "A single character short flag alias",
           "maxLength": 1,
           "minLength": 1
+        },
+        "type": {
+          "description": "The data type the value is validated against and cast to",
+          "$ref": "#/definitions/input_type"
         }
-      }
+      },
+      "allOf": [
+        {"$ref": "#/definitions/input_type_conflicts"}
+      ]
     },
     "ccm_manifest_transform": {
       "type": "object",
@@ -458,12 +523,77 @@
           }
         },
         "default": {
-          "type": "string",
+          "oneOf": [
+            {"type": "string"},
+            {"type": "boolean"}
+          ],
           "description": "A default value to assign to the argument"
         },
         "validate": {
           "type": "string",
           "description": "A expr based validator for this specific argument"
+        },
+        "type": {
+          "description": "The data type the value is validated against and cast to",
+          "$ref": "#/definitions/input_type"
+        }
+      },
+      "allOf": [
+        {"$ref": "#/definitions/input_type_conflicts"}
+      ]
+    },
+    "one_password_secret": {
+      "type": "object",
+      "description": "Resolves a secret from a 1Password item using the op CLI",
+      "required": [
+        "item",
+        "field",
+        "vault"
+      ],
+      "properties": {
+        "item": {
+          "type": "string",
+          "description": "The 1Password item name or ID holding the secret",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\- ]+$"
+        },
+        "field": {
+          "type": "string",
+          "description": "The field within the item to read",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\- ]+$"
+        },
+        "vault": {
+          "type": "string",
+          "description": "The vault holding the item, required because op read references must include it",
+          "minLength": 1,
+          "pattern": "^[A-Za-z0-9_.\\- ]+$"
+        },
+        "account": {
+          "type": "string",
+          "description": "Optionally selects a specific 1Password account such as my.1password.com"
+        }
+      }
+    },
+    "secret": {
+      "type": "object",
+      "description": "A value resolved at command invocation time from an external store and exposed to templates as {{ .Secrets.<name> }}",
+      "required": [
+        "name"
+      ],
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "A unique name used to reference the secret in templates as {{ .Secrets.<name> }}, must be a valid template identifier",
+          "minLength": 1,
+          "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
+        },
+        "description": {
+          "type": "string",
+          "description": "A human friendly description of what the secret is used for"
+        },
+        "one_password": {
+          "$ref": "#/definitions/one_password_secret"
         }
       }
     },
@@ -614,7 +744,6 @@
     "discover_command": {
       "description": "A command that does Choria based node discovery. Only available within Choria Server.",
       "type": "object",
-      "additionalProperties": false,
       "allOf": [
         {
           "$ref": "#/definitions/generic_command"
@@ -628,6 +757,13 @@
             "type": {
               "type": "string",
               "const": "discover"
+            },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
             },
             "filter": {
               "description": "Optional filters to apply to the request, will be merged with standard options if set",
@@ -662,7 +798,6 @@
     },
     "rpc_command": {
       "description": "A command that interact with the Choria RPC system. Available only within Choria Server not App Builder.",
-      "additionalProperties": false,
       "type": "object",
       "allOf": [
         {
@@ -674,6 +809,13 @@
             "type": {
               "type": "string",
               "const": "rpc"
+            },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
             },
             "commands": {
               "description": "Additional CLI commands to add",
@@ -791,7 +933,6 @@
     "kv_command": {
       "description": "A command that interact with the Choria Key-Value store. Available only within Choria Server not App Builder.",
       "type": "object",
-      "additionalProperties": false,
       "allOf": [
         {
           "$ref": "#/definitions/generic_command"
@@ -809,6 +950,13 @@
               "type": "string",
               "const": "kv"
             },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
+            },
             "commands": {
               "description": "Additional CLI commands to add",
               "$ref": "#/definitions/commands"
@@ -816,7 +964,7 @@
             "bucket": {
               "type": "string",
               "description": "The name of the Key-Value store bucket",
-              "pattern": "\\A[a-zA-Z0-9_-]+\\z",
+              "pattern": "^[a-zA-Z0-9_-]+$",
               "minLength": 1
             },
             "key": {
@@ -879,6 +1027,13 @@
             "type": {
               "type": "string",
               "const": "scaffold"
+            },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
             },
             "target": {
               "type": "string",
@@ -950,6 +1105,13 @@
               "type": "string",
               "const": "form"
             },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
+            },
             "properties": {
               "description": "The list of properties to ask for",
               "type": "array",
@@ -1001,6 +1163,13 @@
               "type": "string",
               "const": "ccm_manifest"
             },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
+            },
             "manifest": {
               "type": "string",
               "description": "The url to the manifest to execute"
@@ -1048,6 +1217,65 @@
         }
       ]
     },
+    "file_command": {
+      "description": "Reads a file and writes its bytes to STDOUT",
+      "type": "object",
+      "allOf": [
+        {"$ref": "#/definitions/generic_command"},
+        {
+          "type": "object",
+          "required": ["file"],
+          "properties": {
+            "type": {
+              "type": "string",
+              "const": "file"
+            },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
+            },
+            "file": {
+              "type": "string",
+              "description": "The file to read, relative to chroot when set, supports templating"
+            },
+            "chroot": {
+              "type": "string",
+              "description": "Restricts reads to files below this directory, supports templating",
+              "minLength": 1
+            },
+            "action": {
+              "type": "string",
+              "description": "The operation to perform on the file",
+              "enum": ["read"],
+              "default": "read"
+            },
+            "flags": {
+              "type": "array",
+              "description": "Flags to accept",
+              "items": {
+                "$ref": "#/definitions/generic_flag"
+              }
+            },
+            "arguments": {
+              "type": "array",
+              "description": "Arguments to accept",
+              "items": {
+                "$ref": "#/definitions/generic_argument"
+              }
+            },
+            "commands": {
+              "type": "array",
+              "description": "Sub commands to add below this one",
+              "$ref": "#/definitions/commands",
+              "minItems": 1
+            }
+          }
+        }
+      ]
+    },
     "exec_command": {
       "description": "A command that executes other shell commands",
       "type": "object",
@@ -1059,6 +1287,13 @@
             "type": {
               "type": "string",
               "const": "exec"
+            },
+            "secrets": {
+              "type": "array",
+              "description": "Secrets resolved from an external store before the command runs, exposed to templates as {{ .Secrets.<name> }}",
+              "items": {
+                "$ref": "#/definitions/secret"
+              }
             },
             "command": {
               "type": "string",
